@@ -22,15 +22,19 @@ export default function PostsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft" | "scheduled">("all");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 50;
 
   useEffect(() => {
     const loadPosts = async () => {
       try {
         setLoading(true);
         setError(null);
-        const wpPosts = await getAllPosts();
+        const result = await getAllPosts(page, limit);
 
-        const formattedPosts = wpPosts.map((post: any) => ({
+        const formattedPosts = result.posts.map((post: any) => ({
           id: post.id?.toString?.() ?? String(post.slug ?? post.id ?? ""),
           title: String(post.title ?? post.slug ?? "Untitled"),
           slug: post.slug,
@@ -43,6 +47,8 @@ export default function PostsPage() {
         }));
 
         setPosts(formattedPosts);
+        setTotalPages(result.totalPages);
+        setTotal(result.total);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load posts");
         console.error("Posts error:", err);
@@ -52,7 +58,7 @@ export default function PostsPage() {
     };
 
     loadPosts();
-  }, []);
+  }, [page]);
 
   const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,10 +110,10 @@ export default function PostsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Posts</h1>
-          <p className="text-muted">Manage your blog posts</p>
+          <p className="text-muted">{total.toLocaleString()} total posts</p>
         </div>
         <Link href="/admin/posts/new" className="btn-modern">
-          <span className="mr-2">➕</span> New Post
+          <span className="mr-2">+</span> New Post
         </Link>
       </div>
 
@@ -206,6 +212,31 @@ export default function PostsPage() {
       {filteredPosts.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted">No posts found matching your criteria.</p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-sm text-muted">
+            Page {page} of {totalPages} ({total.toLocaleString()} total)
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded-lg border border-border bg-background text-sm disabled:opacity-50 hover:bg-secondary"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 rounded-lg border border-border bg-background text-sm disabled:opacity-50 hover:bg-secondary"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

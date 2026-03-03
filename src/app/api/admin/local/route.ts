@@ -124,10 +124,10 @@ function toIndexItem(type: IndexItemType, record: any): ContentIndexItem {
   };
 }
 
-function listPostsPages(type: "posts" | "pages") {
+function listPostsPages(type: "posts" | "pages", page = 1, limit = 50) {
   const idx = readIndex();
   const want: IndexItemType = type === "posts" ? "post" : "page";
-  const items = Object.values(idx.items)
+  const allItems = Object.values(idx.items)
     .filter((i) => i.type === want)
     .sort((a, b) => {
       const ad = a.publishedAt ? Date.parse(a.publishedAt) : 0;
@@ -135,7 +135,11 @@ function listPostsPages(type: "posts" | "pages") {
       return bd - ad;
     });
 
-  return items.map((i) => {
+  const total = allItems.length;
+  const start = (page - 1) * limit;
+  const paginatedItems = allItems.slice(start, start + limit);
+
+  const posts = paginatedItems.map((i) => {
     const record = readJson<any>(itemPath(type, i.slug), null);
     return {
       id: i.slug,
@@ -159,6 +163,8 @@ function listPostsPages(type: "posts" | "pages") {
       sourceUrl: i.sourceUrl,
     };
   });
+
+  return { posts, total, page, limit, totalPages: Math.ceil(total / limit) };
 }
 
 function listCategories() {
@@ -218,6 +224,9 @@ export async function GET(request: NextRequest) {
     switch (type) {
       case "posts":
       case "pages": {
+        const page = parseInt(searchParams.get("page") ?? "1", 10);
+        const limit = parseInt(searchParams.get("limit") ?? "50", 10);
+
         if (id) {
           const slug = safeSlug(id);
           const fp = itemPath(type, slug);
@@ -246,7 +255,7 @@ export async function GET(request: NextRequest) {
           });
         }
 
-        return NextResponse.json(listPostsPages(type));
+        return NextResponse.json(listPostsPages(type, page, limit));
       }
 
       case "categories":

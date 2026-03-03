@@ -77,8 +77,8 @@ async function apiCall(endpoint: string, options: RequestInit = {}) {
 }
 
 // Posts
-export async function getAllPosts(): Promise<LocalPost[]> {
-  return apiCall('?type=posts');
+export async function getAllPosts(page = 1, limit = 50): Promise<{ posts: LocalPost[]; total: number; page: number; limit: number; totalPages: number }> {
+  return apiCall(`?type=posts&page=${page}&limit=${limit}`);
 }
 
 export async function getPostById(id: string): Promise<LocalPost | null> {
@@ -228,8 +228,8 @@ export async function saveSeoSettings(settings: any) {
 
 // Additional helper functions for admin dashboard
 export async function getPostsByStatus(status: LocalPost['status']) {
-  const posts = await getAllPosts();
-  return posts.filter(post => post.status === status);
+  const result = await getAllPosts(1, 1000);
+  return result.posts.filter(post => post.status === status);
 }
 
 export async function getPagesByStatus(status: LocalPage['status']) {
@@ -238,8 +238,8 @@ export async function getPagesByStatus(status: LocalPage['status']) {
 }
 
 export async function searchPosts(query: string) {
-  const posts = await getAllPosts();
-  return posts.filter(post => 
+  const result = await getAllPosts(1, 1000);
+  return result.posts.filter(post => 
     post.title.toLowerCase().includes(query.toLowerCase()) ||
     post.content.toLowerCase().includes(query.toLowerCase()) ||
     post.excerpt.toLowerCase().includes(query.toLowerCase())
@@ -256,8 +256,8 @@ export async function searchPages(query: string) {
 }
 
 export async function getRecentPosts(limit = 10) {
-  const posts = await getAllPosts();
-  return posts
+  const result = await getAllPosts(1, limit);
+  return result.posts
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     .slice(0, limit);
 }
@@ -270,8 +270,8 @@ export async function getRecentPages(limit = 10) {
 }
 
 export async function getPostsByCategory(categorySlug: string) {
-  const posts = await getAllPosts();
-  return posts.filter(post => post.categories.includes(categorySlug));
+  const result = await getAllPosts(1, 1000);
+  return result.posts.filter(post => post.categories.includes(categorySlug));
 }
 
 export async function duplicatePost(id: string) {

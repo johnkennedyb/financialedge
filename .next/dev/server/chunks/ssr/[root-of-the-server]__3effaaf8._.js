@@ -541,7 +541,7 @@ function FeaturedBentoItem({ item, isLive }) {
     const title = isLive ? item.title?.rendered : item.title;
     const description = isLive ? item.excerpt?.rendered : item.description;
     const image = isLive ? item._embedded?.["wp:featuredmedia"]?.[0]?.source_url : item.featuredImage;
-    const slug = item.slug;
+    const slug = String(item.slug || '');
     const fallbackImages = [
         "https://images.pexels.com/photos/3184296/pexels-photo-3184296.jpeg?auto=compress&cs=tinysrgb&w=1600",
         "https://images.pexels.com/photos/730647/pexels-photo-730647.jpeg?auto=compress&cs=tinysrgb&w=1600",

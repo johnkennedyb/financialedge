@@ -1,12 +1,45 @@
-[00:00:56.070] Server  LOG     ○ Compiling middleware ...
-[00:00:56.915] Server  WARN    ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
-[00:01:05.760] Server  LOG     ✓ Ready in 49.3s
-[00:01:09.875] Server  LOG     ○ Compiling /admin/login ...
-[00:01:18.819] Server  LOG     ✓ Finished filesystem cache database compaction in 17.1s
-[00:03:14.362] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:04:42.689] Browser WARN    Image with src "/logo.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:04:48.076] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:12:28.923] Server  LOG     ○ Compiling /admin/pages ...
-[00:12:37.932] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:13:20.615] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:56.360] Server  LOG     ✓ Ready in 37.5s
+[00:02:15.078] Server  LOG     ○ Compiling / ...
+[00:04:54.904] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:04:55.638] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <SegmentViewNode type="page" pagePath="page.tsx">
+      <SegmentTrieNode>
+      <HomePage>
+        <div className="flex flex-...">
+          <section>
+          <section className="mx-auto w-...">
+            <div className="flex flex-...">
+              <div>
+              <div className="grid grid-...">
+                <div>
+                <div>
+                <div className="md:col-spa...">
+                  <LocalPostCard item={{slug:"35015-2", ...}}>
+                    <article className="group anim...">
+                      <LinkComponent href="/35015-2" className="block">
+                        <a className="block" ref={function} onClick={function onClick} ...>
+                          <div>
+                          <div className="p-5">
+                            <div className="flex flex-...">
+                              <span>
+                              <span className="text-xs font-medium text-[color:var(--muted)]">
++                               Feb 27, 2026
+-                               27 Feb 2026
+                            ...
+                  ...
+    ...
+
+[00:06:19.878] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:07:29.148] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
