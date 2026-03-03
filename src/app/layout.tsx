@@ -35,7 +35,10 @@ export const metadata: Metadata = {
     default: "FinancialEDGE",
     template: "%s | FinancialEDGE",
   },
-  description: "Nigeria's most reliable financial newsletter.",
+  description: "Nigeria's most reliable financial market analysis for the savvy investor.",
+  icons: {
+    icon: "/globe.svg",
+  },
 };
 
 export default function RootLayout({

@@ -35,7 +35,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
-            Nigeria's most reliable market analysis for the savvy investor. Fast, modern, and built for global intelligence summits.
+            Nigeria's most reliable financial market analysis for the savvy investor. Fast, modern, and built for global intelligence.
           </p>
 
           <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fe-fade-up" style={{ animationDelay: '200ms' }}>
