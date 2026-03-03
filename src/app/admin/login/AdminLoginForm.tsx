@@ -31,7 +31,7 @@ export default function AdminLoginForm() {
 
       if (response.ok) {
         document.cookie = "admin-auth=authenticated; path=/; max-age=86400; samesite=strict";
-        router.push(redirectUrl);
+        window.location.href = redirectUrl;
       } else {
         setError("Invalid credentials");
       }
