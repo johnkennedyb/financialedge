@@ -40,8 +40,8 @@ export default function AdminTestPage() {
     try {
       // Test 3: Get posts
       addResult("Testing posts endpoint...", true);
-      const posts = await getAllPosts();
-      addResult(`✅ Posts loaded: ${posts.length} posts`, true);
+      const result = await getAllPosts();
+      addResult(`✅ Posts loaded: ${result.total} posts`, true);
     } catch (error) {
       addResult(`❌ Posts failed: ${error}`, false);
     }
