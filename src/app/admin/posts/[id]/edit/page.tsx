@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
-import { getAllPosts, getPostBySlug, updatePost, getAllCategories } from "@/lib/admin-api";
+import { getPostById, getPostBySlug, updatePost, getAllCategories } from "@/lib/admin-api";
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -35,8 +35,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         setCategories(cats.map((cat: any) => cat.name));
 
         // Load post data
-        const posts = await getAllPosts();
-        const post = posts.find((p: any) => p.slug === id || p.id?.toString() === id);
+        const post = await getPostById(id);
 
         if (!post) {
           setError("Post not found");
