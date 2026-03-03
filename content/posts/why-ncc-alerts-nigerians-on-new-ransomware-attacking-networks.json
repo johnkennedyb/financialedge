@@ -1,0 +1,12 @@
+{
+  "slug": "why-ncc-alerts-nigerians-on-new-ransomware-attacking-networks",
+  "type": "post",
+  "title": "Why NCC Alerts Nigerians on New Ransomware Attacking Networks",
+  "description": "The Nigerian Communications Commission (NCC) has alerted members of the public about how a cybercrime group has perfected a New Year scheme to deliver ransomware to targeted organisational networks. T",
+  "publishedAt": "2022-01-20T08:12:33+01:00",
+  "featuredImage": null,
+  "sourceUrl": "https://financialedge.com.ng/why-ncc-alerts-nigerians-on-new-ransomware-attacking-networks/",
+  "section": "Info Tech",
+  "sectionSlug": "info-tech",
+  "html": "<p>The Nigerian Communications Commission (NCC) has alerted members of the public about how a cybercrime group has perfected a New Year scheme to deliver ransomware to targeted organisational networks.</p>\n<p>The new ransomware uncovered by security experts has been categorised by the Nigerian Computer Emergency Response Team’s (ngCERT) advisory as high-risk and critical.</p>\n<p>NCC explained in a statement that the ngCERT advisory, in its receb5 release, said the criminal group had been mailing out USB thumb drives to many organisations in the hope that recipients will plug them into their PCs and install the ransomware on their networks.</p>\n<p>While businesses are being targeted, criminals could soon begin sending infected USB drives to individuals. Describing how the cybercrime group runs the ransomware, the ngCERT advisory said the USB drives contain so-called ‘BadUSB’ attacks.</p>\n<p>The BadUSB exploits the USB standards versatility and allows an attacker to reprogram a USB drive to emulate a keyboard to create keystrokes and commands on a computer. It then installs malware prior to the operating system booting, or spoofs a network card to redirect traffic.</p>\n<p>Numerous attack tools are also installed in the process that allows for exploitation of personal computers (PCs), lateral movement across a network, and installation of additional malware.</p>\n"
+}

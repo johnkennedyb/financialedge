@@ -1,0 +1,12 @@
+{
+  "slug": "why-ncc-raises-concern-on-virus-attack",
+  "type": "post",
+  "title": "Why NCC raises concern on virus attack",
+  "description": "The Nigerian Communications Commission ‘s Computer Security Incident Response Team (NCC-CSIRT) has flagged a new malware, HiddenAds, which has infiltrated Google Play Store that can impact device perf",
+  "publishedAt": "2022-08-09T09:09:20+01:00",
+  "featuredImage": null,
+  "sourceUrl": "https://financialedge.com.ng/why-ncc-raises-concern-on-virus-attack/",
+  "section": "Info Tech",
+  "sectionSlug": "info-tech",
+  "html": "<p style=\"text-align: justify; background: white; margin: 0in 0in 6.8pt 0in;\"><span style=\"color: #333f48; background: white;\">The Nigerian Communications Commission ‘s Computer Security Incident Response Team (NCC-CSIRT) has flagged a new malware, HiddenAds, which has infiltrated Google Play Store that can impact device performance and jeopardise users’ privacy. </span></p>\n<p style=\"text-align: justify; background: white; margin: 0in 0in 6.8pt 0in;\"><span style=\"color: #333f48; background: white;\">In its August 8 advisory, NCC-CSIRT classified the virus, first identified by the McAfee Mobile Research Team, as high in probability and damage potential. The malware infiltrated the Google Play Store in the form of several device cleaners or optimisation apps. </span></p>\n<p style=\"text-align: justify; background: white; margin: 0in 0in 6.8pt 0in;\"><span style=\"color: #333f48; background: white;\">NCC-CSIRT said: “Upon installation, it can run malicious services without the user opening the app. It also spams the user with irrelevant advertisements. The apps have received downloads ranging from 100,000 to over a million. </span></p>\n<p style=\"text-align: justify; background: white; margin: 0in 0in 6.8pt 0in;\"><span style=\"color: #333f48; background: white;\">“Some of the apps HiddenAds masquerades as are: Junk Cleaner, EasyCleaner, Power Doctor, Carpet Clean, Super Clean, Meteor Clean, Strong Clean, Windy Clean, Fingertip Cleaner, Keep Clean, Full Clean – Clean Cache, Quick Cleaner, and Cool Clean. “When a user installs any of the aforementioned apps, whether the user has opened the app or not, a malicious service is immediately installed on the device.</span></p>\n"
+}
