@@ -1,295 +1,197 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "node:fs";
-import path from "node:path";
-import crypto from "node:crypto";
+import { neon } from "@neondatabase/serverless";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
-type ItemType = "posts" | "pages" | "categories" | "seo" | "analytics" | "media";
-
-type IndexItemType = "post" | "page";
-
-type ContentIndexItem = {
-  slug: string;
-  type: IndexItemType;
-  title: string | null;
-  description: string | null;
-  publishedAt: string | null;
-  featuredImage: string | null;
-  sourceUrl: string;
-  section?: string | null;
-  sectionSlug?: string | null;
+// Database client
+const getDb = () => {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not defined");
+  }
+  return neon(connectionString);
 };
 
-type ContentIndex = {
-  generatedAt: string;
-  items: Record<string, ContentIndexItem>;
-};
+// Helper to convert DB row to Post format
+const dbRowToPost = (row: any) => ({
+  id: String(row.id),
+  slug: row.slug,
+  title: row.title,
+  content: row.content || "",
+  excerpt: row.excerpt || "",
+  status: row.status || "draft",
+  author: row.author || "admin",
+  createdAt: row.created_at ? new Date(row.created_at).toISOString() : "",
+  updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : "",
+  categories: row.categories || [],
+  tags: row.tags || [],
+  featuredImage: row.featured_image || undefined,
+  meta: {
+    description: row.meta_description || undefined,
+    keywords: row.meta_keywords || [],
+  },
+  publishedAt: row.published_at ? new Date(row.published_at).toISOString() : null,
+});
 
-function projectRoot() {
-  return process.cwd();
-}
+// Helper to convert DB row to Page format
+const dbRowToPage = (row: any) => ({
+  id: String(row.id),
+  slug: row.slug,
+  title: row.title,
+  content: row.content || "",
+  excerpt: row.excerpt || "",
+  status: row.status || "draft",
+  author: row.author || "admin",
+  createdAt: row.created_at ? new Date(row.created_at).toISOString() : "",
+  updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : "",
+  template: row.template || undefined,
+  featuredImage: row.featured_image || undefined,
+  meta: {
+    description: row.meta_description || undefined,
+    keywords: row.meta_keywords || [],
+  },
+  publishedAt: row.published_at ? new Date(row.published_at).toISOString() : null,
+});
 
-function contentDir() {
-  return path.join(projectRoot(), "content");
-}
-
-function indexFilePath() {
-  return path.join(contentDir(), "index.json");
-}
-
-function postsDir() {
-  return path.join(contentDir(), "posts");
-}
-
-function pagesDir() {
-  return path.join(contentDir(), "pages");
-}
-
-function categoriesDir() {
-  return path.join(contentDir(), "categories");
-}
-
-function categoriesMetaPath() {
-  return path.join(contentDir(), "categories-meta.json");
-}
-
-function seoSettingsPath() {
-  return path.join(contentDir(), "seo.json");
-}
-
-function analyticsPath() {
-  return path.join(contentDir(), "analytics.json");
-}
-
-function mediaMetaPath() {
-  return path.join(contentDir(), "media.json");
-}
-
-function ensureDir(p: string) {
-  fs.mkdirSync(p, { recursive: true });
-}
-
-function safeSlug(slug: string) {
-  return slug.replace(/[^a-z0-9-]/gi, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
-}
-
-function sha1(input: string) {
-  return crypto.createHash("sha1").update(input).digest("hex");
-}
-
-function readJson<T>(filePath: string, fallback: T): T {
-  try {
-    if (!fs.existsSync(filePath)) return fallback;
-    return JSON.parse(fs.readFileSync(filePath, "utf8")) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-function writeJson(filePath: string, value: unknown) {
-  ensureDir(path.dirname(filePath));
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2));
-}
-
-function readIndex(): ContentIndex {
-  return readJson<ContentIndex>(indexFilePath(), { generatedAt: new Date().toISOString(), items: {} });
-}
-
-function writeIndex(index: ContentIndex) {
-  index.generatedAt = new Date().toISOString();
-  writeJson(indexFilePath(), index);
-}
-
-function itemPath(type: "posts" | "pages", slug: string) {
-  const base = type === "posts" ? postsDir() : pagesDir();
-  return path.join(base, `${slug}.json`);
-}
-
-function nowIso() {
-  return new Date().toISOString();
-}
-
-function toIndexItem(type: IndexItemType, record: any): ContentIndexItem {
-  return {
-    slug: record.slug,
-    type,
-    title: record.title ?? null,
-    description: record.description ?? null,
-    publishedAt: record.publishedAt ?? null,
-    featuredImage: record.featuredImage ?? null,
-    sourceUrl: record.url ?? record.sourceUrl ?? "",
-    section: record.section ?? null,
-    sectionSlug: record.sectionSlug ?? null,
-  };
-}
-
-function listPostsPages(type: "posts" | "pages", page = 1, limit = 50) {
-  const idx = readIndex();
-  const want: IndexItemType = type === "posts" ? "post" : "page";
-  const allItems = Object.values(idx.items)
-    .filter((i) => i.type === want)
-    .sort((a, b) => {
-      const ad = a.publishedAt ? Date.parse(a.publishedAt) : 0;
-      const bd = b.publishedAt ? Date.parse(b.publishedAt) : 0;
-      return bd - ad;
-    });
-
-  const total = allItems.length;
-  const start = (page - 1) * limit;
-  const paginatedItems = allItems.slice(start, start + limit);
-
-  const posts = paginatedItems.map((i) => {
-    const record = readJson<any>(itemPath(type, i.slug), null);
-    return {
-      id: i.slug,
-      slug: i.slug,
-      title: i.title ?? i.slug,
-      excerpt: i.description ?? "",
-      content: record?.html ?? "",
-      status: "publish",
-      author: "admin",
-      createdAt: i.publishedAt ?? idx.generatedAt,
-      updatedAt: idx.generatedAt,
-      categories: i.sectionSlug ? [i.sectionSlug] : [],
-      tags: [],
-      featuredImage: i.featuredImage ?? undefined,
-      meta: {
-        description: i.description ?? undefined,
-        keywords: [],
-      },
-      section: i.section ?? null,
-      sectionSlug: i.sectionSlug ?? null,
-      sourceUrl: i.sourceUrl,
-    };
-  });
-
-  return { posts, total, page, limit, totalPages: Math.ceil(total / limit) };
-}
-
-function listCategories() {
-  const idx = readIndex();
-  const meta = readJson<Record<string, { name?: string; description?: string }>>(categoriesMetaPath(), {});
-
-  const counts = new Map<string, { slug: string; name: string; count: number }>();
-  for (const item of Object.values(idx.items)) {
-    if (item.type !== "post") continue;
-    if (!item.sectionSlug) continue;
-    const slug = item.sectionSlug;
-    const current = counts.get(slug) ?? { slug, name: item.section ?? slug, count: 0 };
-    current.count += 1;
-    counts.set(slug, current);
-  }
-
-  return Array.from(counts.values())
-    .sort((a, b) => b.count - a.count)
-    .map((c) => ({
-      id: c.slug,
-      slug: c.slug,
-      name: meta[c.slug]?.name ?? c.name,
-      description: meta[c.slug]?.description ?? "",
-      count: c.count,
-      createdAt: idx.generatedAt,
-      updatedAt: idx.generatedAt,
-    }));
-}
-
-function listMedia() {
-  const meta = readJson<Record<string, any>>(mediaMetaPath(), {});
-  return Object.values(meta).sort((a: any, b: any) => (b.uploadedAt ?? "").localeCompare(a.uploadedAt ?? ""));
-}
-
-function readSeo() {
-  return readJson<any>(seoSettingsPath(), null);
-}
-
-function writeSeo(settings: any) {
-  writeJson(seoSettingsPath(), settings);
-}
-
-function readAnalytics() {
-  return readJson<any>(analyticsPath(), { pageViews: {} });
-}
-
-function writeAnalytics(data: any) {
-  writeJson(analyticsPath(), data);
-}
-
+// GET handler
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const type = (searchParams.get("type") ?? "") as ItemType;
+  const type = searchParams.get("type") as "posts" | "pages" | "categories" | "media" | "seo" | "analytics" | null;
   const id = searchParams.get("id");
+  const slug = searchParams.get("slug");
+
+  if (!type) {
+    return NextResponse.json({ error: "Type parameter is required" }, { status: 400 });
+  }
+
+  const db = getDb();
 
   try {
     switch (type) {
-      case "posts":
-      case "pages": {
-        const page = parseInt(searchParams.get("page") ?? "1", 10);
-        const limit = parseInt(searchParams.get("limit") ?? "50", 10);
+      case "posts": {
+        const page = parseInt(searchParams.get("page") || "1", 10);
+        const limit = parseInt(searchParams.get("limit") || "50", 10);
+        const offset = (page - 1) * limit;
 
         if (id) {
-          const slug = safeSlug(id);
-          const fp = itemPath(type, slug);
-          if (!fs.existsSync(fp)) return NextResponse.json(null);
-          const record = readJson<any>(fp, null);
-          return NextResponse.json({
-            id: slug,
-            slug,
-            title: record?.title ?? slug,
-            excerpt: record?.description ?? "",
-            content: record?.html ?? "",
-            status: "publish",
-            author: "admin",
-            createdAt: record?.publishedAt ?? null,
-            updatedAt: record?.publishedAt ?? null,
-            categories: record?.sectionSlug ? [record.sectionSlug] : [],
-            tags: [],
-            featuredImage: record?.featuredImage ?? undefined,
-            meta: {
-              description: record?.description ?? undefined,
-              keywords: [],
-            },
-            section: record?.section ?? null,
-            sectionSlug: record?.sectionSlug ?? null,
-            sourceUrl: record?.url ?? "",
-          });
+          const result = await db("SELECT * FROM posts WHERE id = $1 OR slug = $1", [id]);
+          if (result.length === 0) return NextResponse.json(null);
+          return NextResponse.json(dbRowToPost(result[0]));
         }
 
-        return NextResponse.json(listPostsPages(type, page, limit));
-      }
+        if (slug) {
+          const result = await db("SELECT * FROM posts WHERE slug = $1", [slug]);
+          if (result.length === 0) return NextResponse.json(null);
+          return NextResponse.json(dbRowToPost(result[0]));
+        }
 
-      case "categories":
-        return NextResponse.json(listCategories());
-
-      case "media":
-        return NextResponse.json(listMedia());
-
-      case "seo":
-        return NextResponse.json(readSeo());
-
-      case "analytics": {
-        const idx = readIndex();
-        const posts = Object.values(idx.items).filter((i) => i.type === "post");
-        const pages = Object.values(idx.items).filter((i) => i.type === "page");
-        const categories = listCategories();
-        const media = listMedia();
-        const analytics = readAnalytics();
+        const posts = await db(
+          "SELECT * FROM posts ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+          [limit, offset]
+        );
+        const countResult = await db("SELECT COUNT(*) as total FROM posts");
+        const total = parseInt(countResult[0].total, 10);
 
         return NextResponse.json({
-          totalPosts: posts.length,
-          totalPages: pages.length,
-          totalCategories: categories.length,
-          totalMedia: media.length,
-          posts,
-          pages,
-          analytics,
+          posts: posts.map(dbRowToPost),
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        });
+      }
+
+      case "pages": {
+        if (id) {
+          const result = await db("SELECT * FROM pages WHERE id = $1 OR slug = $1", [id]);
+          if (result.length === 0) return NextResponse.json(null);
+          return NextResponse.json(dbRowToPage(result[0]));
+        }
+
+        if (slug) {
+          const result = await db("SELECT * FROM pages WHERE slug = $1", [slug]);
+          if (result.length === 0) return NextResponse.json(null);
+          return NextResponse.json(dbRowToPage(result[0]));
+        }
+
+        const pages = await db("SELECT * FROM pages ORDER BY created_at DESC");
+        return NextResponse.json(pages.map(dbRowToPage));
+      }
+
+      case "categories": {
+        const categories = await db("SELECT * FROM categories ORDER BY name");
+        return NextResponse.json(
+          categories.map((c: any) => ({
+            id: String(c.id),
+            slug: c.slug,
+            name: c.name,
+            description: c.description || "",
+            parent: c.parent_slug || undefined,
+            createdAt: c.created_at ? new Date(c.created_at).toISOString() : "",
+            updatedAt: c.updated_at ? new Date(c.updated_at).toISOString() : "",
+          }))
+        );
+      }
+
+      case "media": {
+        const media = await db("SELECT * FROM media ORDER BY uploaded_at DESC");
+        return NextResponse.json(
+          media.map((m: any) => ({
+            id: String(m.id),
+            filename: m.filename,
+            originalName: m.original_name,
+            mimeType: m.mime_type,
+            size: m.size,
+            url: m.url,
+            altText: m.alt_text || "",
+            caption: m.caption || "",
+            uploadedAt: m.uploaded_at ? new Date(m.uploaded_at).toISOString() : "",
+          }))
+        );
+      }
+
+      case "seo": {
+        const result = await db("SELECT * FROM seo_settings WHERE id = 1");
+        if (result.length === 0) {
+          return NextResponse.json({
+            siteTitle: "FinancialEDGE",
+            siteDescription: "Nigeria's definitive market intelligence platform",
+          });
+        }
+        const s = result[0];
+        return NextResponse.json({
+          siteTitle: s.site_title,
+          siteDescription: s.site_description,
+          defaultMetaDescription: s.default_meta_description,
+          defaultKeywords: s.default_keywords || [],
+          googleAnalyticsId: s.google_analytics_id,
+        });
+      }
+
+      case "analytics": {
+        const postsCount = await db("SELECT COUNT(*) as count FROM posts");
+        const pagesCount = await db("SELECT COUNT(*) as count FROM pages");
+        const categoriesCount = await db("SELECT COUNT(*) as count FROM categories");
+        const mediaCount = await db("SELECT COUNT(*) as count FROM media");
+        const pageViews = await db("SELECT * FROM page_views ORDER BY views DESC LIMIT 10");
+
+        return NextResponse.json({
+          totalPosts: parseInt(postsCount[0].count, 10),
+          totalPages: parseInt(pagesCount[0].count, 10),
+          totalCategories: parseInt(categoriesCount[0].count, 10),
+          totalMedia: parseInt(mediaCount[0].count, 10),
+          topPages: pageViews.map((pv: any) => ({
+            path: pv.path,
+            views: pv.views,
+          })),
         });
       }
 
       default:
-        return NextResponse.json({ error: "Invalid type parameter" }, { status: 400 });
+        return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
   } catch (error) {
+    console.error("API error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
@@ -297,87 +199,165 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// POST handler - Create new records
 export async function POST(request: NextRequest) {
+  const db = getDb();
+
   try {
     const body = await request.json();
-    const type = body?.type as ItemType | undefined;
-    const data = body?.data;
+    const { type, data } = body;
 
     if (!type || !data) {
       return NextResponse.json({ error: "Type and data are required" }, { status: 400 });
     }
 
-    if (type === "seo") {
-      writeSeo({ ...data, updatedAt: nowIso() });
-      return NextResponse.json({ success: true });
+    switch (type) {
+      case "posts": {
+        const slug = data.slug || data.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        if (!slug) {
+          return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+        }
+
+        const result = await db(
+          `INSERT INTO posts (slug, title, content, excerpt, status, author, featured_image, categories, tags, meta_description, meta_keywords, published_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+           RETURNING *`,
+          [
+            slug,
+            data.title,
+            data.content,
+            data.excerpt,
+            data.status || "draft",
+            data.author || "admin",
+            data.featuredImage,
+            data.categories || [],
+            data.tags || [],
+            data.meta?.description,
+            data.meta?.keywords || [],
+            data.status === "publish" ? new Date().toISOString() : null,
+          ]
+        );
+
+        return NextResponse.json(dbRowToPost(result[0]), { status: 201 });
+      }
+
+      case "pages": {
+        const slug = data.slug || data.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        if (!slug) {
+          return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+        }
+
+        const result = await db(
+          `INSERT INTO pages (slug, title, content, excerpt, status, author, featured_image, template, meta_description, meta_keywords, published_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+           RETURNING *`,
+          [
+            slug,
+            data.title,
+            data.content,
+            data.excerpt,
+            data.status || "draft",
+            data.author || "admin",
+            data.featuredImage,
+            data.template,
+            data.meta?.description,
+            data.meta?.keywords || [],
+            data.status === "publish" ? new Date().toISOString() : null,
+          ]
+        );
+
+        return NextResponse.json(dbRowToPage(result[0]), { status: 201 });
+      }
+
+      case "categories": {
+        const slug = data.slug || data.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        if (!slug) {
+          return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+        }
+
+        const result = await db(
+          `INSERT INTO categories (slug, name, description, parent_slug)
+           VALUES ($1, $2, $3, $4)
+           RETURNING *`,
+          [slug, data.name, data.description, data.parent]
+        );
+
+        const c = result[0];
+        return NextResponse.json(
+          {
+            id: String(c.id),
+            slug: c.slug,
+            name: c.name,
+            description: c.description || "",
+            parent: c.parent_slug || undefined,
+            createdAt: c.created_at ? new Date(c.created_at).toISOString() : "",
+            updatedAt: c.updated_at ? new Date(c.updated_at).toISOString() : "",
+          },
+          { status: 201 }
+        );
+      }
+
+      case "media": {
+        const result = await db(
+          `INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING *`,
+          [
+            data.filename,
+            data.originalName,
+            data.mimeType,
+            data.size,
+            data.url,
+            data.altText,
+            data.caption,
+          ]
+        );
+
+        const m = result[0];
+        return NextResponse.json(
+          {
+            id: String(m.id),
+            filename: m.filename,
+            originalName: m.original_name,
+            mimeType: m.mime_type,
+            size: m.size,
+            url: m.url,
+            altText: m.alt_text || "",
+            caption: m.caption || "",
+            uploadedAt: m.uploaded_at ? new Date(m.uploaded_at).toISOString() : "",
+          },
+          { status: 201 }
+        );
+      }
+
+      case "seo": {
+        await db(
+          `INSERT INTO seo_settings (id, site_title, site_description, default_meta_description, default_keywords, google_analytics_id, updated_at)
+           VALUES (1, $1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+           ON CONFLICT (id) DO UPDATE SET
+             site_title = EXCLUDED.site_title,
+             site_description = EXCLUDED.site_description,
+             default_meta_description = EXCLUDED.default_meta_description,
+             default_keywords = EXCLUDED.default_keywords,
+             google_analytics_id = EXCLUDED.google_analytics_id,
+             updated_at = CURRENT_TIMESTAMP`,
+          [
+            data.siteTitle,
+            data.siteDescription,
+            data.defaultMetaDescription,
+            data.defaultKeywords || [],
+            data.googleAnalyticsId,
+          ]
+        );
+
+        return NextResponse.json({ success: true });
+      }
+
+      default:
+        return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
-
-    if (type === "analytics") {
-      writeAnalytics(data);
-      return NextResponse.json({ success: true });
-    }
-
-    if (type === "categories") {
-      const slug = safeSlug(String(data.slug ?? data.id ?? ""));
-      if (!slug) return NextResponse.json({ error: "Category slug is required" }, { status: 400 });
-      const meta = readJson<Record<string, any>>(categoriesMetaPath(), {});
-      meta[slug] = {
-        name: String(data.name ?? slug),
-        description: String(data.description ?? ""),
-        updatedAt: nowIso(),
-      };
-      writeJson(categoriesMetaPath(), meta);
-      ensureDir(categoriesDir());
-      return NextResponse.json({ id: slug, slug, ...meta[slug] }, { status: 201 });
-    }
-
-    if (type === "media") {
-      const meta = readJson<Record<string, any>>(mediaMetaPath(), {});
-      const id = String(data.id ?? sha1(String(data.url ?? nowIso())));
-      meta[id] = {
-        id,
-        filename: data.filename,
-        originalName: data.originalName ?? data.filename,
-        mimeType: data.mimeType ?? "application/octet-stream",
-        size: Number(data.size ?? 0),
-        url: data.url,
-        altText: data.altText ?? "",
-        caption: data.caption ?? "",
-        uploadedAt: data.uploadedAt ?? nowIso(),
-      };
-      writeJson(mediaMetaPath(), meta);
-      return NextResponse.json(meta[id], { status: 201 });
-    }
-
-    if (type === "posts" || type === "pages") {
-      const idx = readIndex();
-      const slug = safeSlug(String(data.slug ?? "")) || safeSlug(String(data.title ?? "")) || sha1(nowIso());
-      const outFile = itemPath(type, slug);
-
-      const recordType: IndexItemType = type === "posts" ? "post" : "page";
-
-      const record = {
-        slug,
-        url: String(data.sourceUrl ?? data.url ?? ""),
-        title: String(data.title ?? slug),
-        description: String(data.excerpt ?? data.description ?? ""),
-        featuredImage: data.featuredImage ?? null,
-        publishedAt: String(data.publishedAt ?? nowIso()),
-        html: String(data.content ?? data.html ?? ""),
-        section: data.section ?? null,
-        sectionSlug: data.sectionSlug ?? (Array.isArray(data.categories) && data.categories[0] ? String(data.categories[0]) : null),
-        type: recordType,
-      };
-
-      writeJson(outFile, record);
-      idx.items[slug] = toIndexItem(record.type, record);
-      writeIndex(idx);
-
-      return NextResponse.json({ id: slug, ...record }, { status: 201 });
-    }
-
-    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   } catch (error) {
+    console.error("POST error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
@@ -385,73 +365,183 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// PUT handler - Update records
 export async function PUT(request: NextRequest) {
+  const db = getDb();
+
   try {
     const body = await request.json();
-    const type = body?.type as ItemType | undefined;
-    const id = body?.id as string | undefined;
-    const data = body?.data;
+    const { type, id, data } = body;
 
     if (!type || !id || !data) {
-      return NextResponse.json({ error: "Type, ID, and data are required" }, { status: 400 });
+      return NextResponse.json({ error: "Type, id, and data are required" }, { status: 400 });
     }
 
-    if (type === "seo") {
-      writeSeo({ ...data, updatedAt: nowIso() });
-      return NextResponse.json({ success: true });
+    switch (type) {
+      case "posts": {
+        const existing = await db("SELECT * FROM posts WHERE id = $1 OR slug = $1", [id]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Post not found" }, { status: 404 });
+        }
+
+        const result = await db(
+          `UPDATE posts SET
+            title = COALESCE($2, title),
+            content = COALESCE($3, content),
+            excerpt = COALESCE($4, excerpt),
+            status = COALESCE($5, status),
+            author = COALESCE($6, author),
+            featured_image = COALESCE($7, featured_image),
+            categories = COALESCE($8, categories),
+            tags = COALESCE($9, tags),
+            meta_description = COALESCE($10, meta_description),
+            meta_keywords = COALESCE($11, meta_keywords),
+            updated_at = CURRENT_TIMESTAMP,
+            published_at = CASE WHEN $5 = 'publish' AND published_at IS NULL THEN CURRENT_TIMESTAMP ELSE published_at END
+           WHERE id = $1 OR slug = $1
+           RETURNING *`,
+          [
+            existing[0].id,
+            data.title,
+            data.content,
+            data.excerpt,
+            data.status,
+            data.author,
+            data.featuredImage,
+            data.categories,
+            data.tags,
+            data.meta?.description,
+            data.meta?.keywords,
+          ]
+        );
+
+        return NextResponse.json(dbRowToPost(result[0]));
+      }
+
+      case "pages": {
+        const existing = await db("SELECT * FROM pages WHERE id = $1 OR slug = $1", [id]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Page not found" }, { status: 404 });
+        }
+
+        const result = await db(
+          `UPDATE pages SET
+            title = COALESCE($2, title),
+            content = COALESCE($3, content),
+            excerpt = COALESCE($4, excerpt),
+            status = COALESCE($5, status),
+            author = COALESCE($6, author),
+            featured_image = COALESCE($7, featured_image),
+            template = COALESCE($8, template),
+            meta_description = COALESCE($9, meta_description),
+            meta_keywords = COALESCE($10, meta_keywords),
+            updated_at = CURRENT_TIMESTAMP,
+            published_at = CASE WHEN $5 = 'publish' AND published_at IS NULL THEN CURRENT_TIMESTAMP ELSE published_at END
+           WHERE id = $1 OR slug = $1
+           RETURNING *`,
+          [
+            existing[0].id,
+            data.title,
+            data.content,
+            data.excerpt,
+            data.status,
+            data.author,
+            data.featuredImage,
+            data.template,
+            data.meta?.description,
+            data.meta?.keywords,
+          ]
+        );
+
+        return NextResponse.json(dbRowToPage(result[0]));
+      }
+
+      case "categories": {
+        const existing = await db("SELECT * FROM categories WHERE id = $1 OR slug = $1", [id]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Category not found" }, { status: 404 });
+        }
+
+        const result = await db(
+          `UPDATE categories SET
+            name = COALESCE($2, name),
+            description = COALESCE($3, description),
+            parent_slug = COALESCE($4, parent_slug),
+            updated_at = CURRENT_TIMESTAMP
+           WHERE id = $1 OR slug = $1
+           RETURNING *`,
+          [existing[0].id, data.name, data.description, data.parent]
+        );
+
+        const c = result[0];
+        return NextResponse.json({
+          id: String(c.id),
+          slug: c.slug,
+          name: c.name,
+          description: c.description || "",
+          parent: c.parent_slug || undefined,
+          createdAt: c.created_at ? new Date(c.created_at).toISOString() : "",
+          updatedAt: c.updated_at ? new Date(c.updated_at).toISOString() : "",
+        });
+      }
+
+      case "media": {
+        const existing = await db("SELECT * FROM media WHERE id = $1", [parseInt(id, 10)]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Media not found" }, { status: 404 });
+        }
+
+        const result = await db(
+          `UPDATE media SET
+            alt_text = COALESCE($2, alt_text),
+            caption = COALESCE($3, caption)
+           WHERE id = $1
+           RETURNING *`,
+          [parseInt(id, 10), data.altText, data.caption]
+        );
+
+        const m = result[0];
+        return NextResponse.json({
+          id: String(m.id),
+          filename: m.filename,
+          originalName: m.original_name,
+          mimeType: m.mime_type,
+          size: m.size,
+          url: m.url,
+          altText: m.alt_text || "",
+          caption: m.caption || "",
+          uploadedAt: m.uploaded_at ? new Date(m.uploaded_at).toISOString() : "",
+        });
+      }
+
+      case "seo": {
+        await db(
+          `INSERT INTO seo_settings (id, site_title, site_description, default_meta_description, default_keywords, google_analytics_id, updated_at)
+           VALUES (1, $1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+           ON CONFLICT (id) DO UPDATE SET
+             site_title = EXCLUDED.site_title,
+             site_description = EXCLUDED.site_description,
+             default_meta_description = EXCLUDED.default_meta_description,
+             default_keywords = EXCLUDED.default_keywords,
+             google_analytics_id = EXCLUDED.google_analytics_id,
+             updated_at = CURRENT_TIMESTAMP`,
+          [
+            data.siteTitle,
+            data.siteDescription,
+            data.defaultMetaDescription,
+            data.defaultKeywords || [],
+            data.googleAnalyticsId,
+          ]
+        );
+
+        return NextResponse.json({ success: true });
+      }
+
+      default:
+        return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
-
-    if (type === "categories") {
-      const slug = safeSlug(id);
-      const meta = readJson<Record<string, any>>(categoriesMetaPath(), {});
-      meta[slug] = {
-        ...(meta[slug] ?? {}),
-        name: data.name ?? meta[slug]?.name ?? slug,
-        description: data.description ?? meta[slug]?.description ?? "",
-        updatedAt: nowIso(),
-      };
-      writeJson(categoriesMetaPath(), meta);
-      return NextResponse.json({ id: slug, slug, ...meta[slug] });
-    }
-
-    if (type === "media") {
-      const meta = readJson<Record<string, any>>(mediaMetaPath(), {});
-      if (!meta[id]) return NextResponse.json({ error: "Not found" }, { status: 404 });
-      meta[id] = { ...meta[id], ...data };
-      writeJson(mediaMetaPath(), meta);
-      return NextResponse.json(meta[id]);
-    }
-
-    if (type === "posts" || type === "pages") {
-      const slug = safeSlug(id);
-      const fp = itemPath(type, slug);
-      if (!fs.existsSync(fp)) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-      const existing = readJson<any>(fp, {});
-      const idx = readIndex();
-
-      const record = {
-        ...existing,
-        title: data.title ?? existing.title,
-        description: data.excerpt ?? data.description ?? existing.description,
-        featuredImage: data.featuredImage ?? existing.featuredImage,
-        html: data.content ?? data.html ?? existing.html,
-        section: data.section ?? existing.section,
-        sectionSlug:
-          data.sectionSlug ??
-          (Array.isArray(data.categories) && data.categories[0] ? String(data.categories[0]) : existing.sectionSlug),
-        updatedAt: nowIso(),
-      };
-
-      writeJson(fp, record);
-      idx.items[slug] = toIndexItem(type === "posts" ? "post" : "page", record);
-      writeIndex(idx);
-
-      return NextResponse.json({ id: slug, ...record });
-    }
-
-    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   } catch (error) {
+    console.error("PUT error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
@@ -459,44 +549,61 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// DELETE handler
 export async function DELETE(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const type = (searchParams.get("type") ?? "") as ItemType;
+  const type = searchParams.get("type") as "posts" | "pages" | "categories" | "media" | null;
   const id = searchParams.get("id");
 
+  if (!type || !id) {
+    return NextResponse.json({ error: "Type and id are required" }, { status: 400 });
+  }
+
+  const db = getDb();
+
   try {
-    if (!type || !id) {
-      return NextResponse.json({ error: "Type and ID are required" }, { status: 400 });
-    }
+    switch (type) {
+      case "posts": {
+        const existing = await db("SELECT id FROM posts WHERE id = $1 OR slug = $1", [id]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Post not found" }, { status: 404 });
+        }
+        await db("DELETE FROM posts WHERE id = $1", [existing[0].id]);
+        return NextResponse.json({ success: true });
+      }
 
-    if (type === "categories") {
-      const slug = safeSlug(id);
-      const meta = readJson<Record<string, any>>(categoriesMetaPath(), {});
-      delete meta[slug];
-      writeJson(categoriesMetaPath(), meta);
-      return NextResponse.json({ success: true });
-    }
+      case "pages": {
+        const existing = await db("SELECT id FROM pages WHERE id = $1 OR slug = $1", [id]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Page not found" }, { status: 404 });
+        }
+        await db("DELETE FROM pages WHERE id = $1", [existing[0].id]);
+        return NextResponse.json({ success: true });
+      }
 
-    if (type === "media") {
-      const meta = readJson<Record<string, any>>(mediaMetaPath(), {});
-      if (!meta[id]) return NextResponse.json({ error: "Not found" }, { status: 404 });
-      delete meta[id];
-      writeJson(mediaMetaPath(), meta);
-      return NextResponse.json({ success: true });
-    }
+      case "categories": {
+        const existing = await db("SELECT id FROM categories WHERE id = $1 OR slug = $1", [id]);
+        if (existing.length === 0) {
+          return NextResponse.json({ error: "Category not found" }, { status: 404 });
+        }
+        await db("DELETE FROM categories WHERE id = $1", [existing[0].id]);
+        return NextResponse.json({ success: true });
+      }
 
-    if (type === "posts" || type === "pages") {
-      const slug = safeSlug(id);
-      const fp = itemPath(type, slug);
-      if (fs.existsSync(fp)) fs.unlinkSync(fp);
-      const idx = readIndex();
-      delete idx.items[slug];
-      writeIndex(idx);
-      return NextResponse.json({ success: true });
-    }
+      case "media": {
+        const mediaId = parseInt(id, 10);
+        if (isNaN(mediaId)) {
+          return NextResponse.json({ error: "Invalid media id" }, { status: 400 });
+        }
+        await db("DELETE FROM media WHERE id = $1", [mediaId]);
+        return NextResponse.json({ success: true });
+      }
 
-    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+      default:
+        return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    }
   } catch (error) {
+    console.error("DELETE error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
