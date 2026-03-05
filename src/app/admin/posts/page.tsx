@@ -44,7 +44,17 @@ export default function PostsPage() {
           publishedAt: post.publishedAt ? String(post.publishedAt).split("T")[0] : post.createdAt ? String(post.createdAt).split("T")[0] : "",
           updatedAt: post.updatedAt ? String(post.updatedAt).split("T")[0] : "",
           excerpt: String(post.excerpt ?? ""),
+          // Keep raw dates for sorting
+          publishedAtRaw: post.publishedAt || post.createdAt || post.updatedAt,
+          updatedAtRaw: post.updatedAt || post.createdAt,
         }));
+
+        // Sort by published date (most recent first)
+        formattedPosts.sort((a: any, b: any) => {
+          const dateA = new Date(a.publishedAtRaw || 0);
+          const dateB = new Date(b.publishedAtRaw || 0);
+          return dateB.getTime() - dateA.getTime();
+        });
 
         setPosts(formattedPosts);
         setTotalPages(result.totalPages);
