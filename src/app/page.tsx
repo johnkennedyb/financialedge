@@ -5,8 +5,8 @@ import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
 import { hasImportedContent, listLatestPosts, listSections } from "@/lib/db-content";
 
-// Revalidate every 60 seconds to get fresh posts
-export const revalidate = 60;
+// Force dynamic rendering to always show fresh posts
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const imported = hasImportedContent();
