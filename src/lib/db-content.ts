@@ -174,5 +174,11 @@ export async function getAllPostSlugs(): Promise<string[]> {
     SELECT slug FROM posts WHERE status = 'publish'
   `;
 
-  return result.map((row: any) => row.slug);
+  if (!result || !Array.isArray(result)) {
+    return [];
+  }
+
+  return result
+    .filter((row: any) => row && row.slug)
+    .map((row: any) => row.slug);
 }
