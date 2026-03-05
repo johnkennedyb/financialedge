@@ -5,10 +5,19 @@ import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
 import { hasImportedContent, listLatestPosts, listSections } from "@/lib/db-content";
 
+// Revalidate every 60 seconds to get fresh posts
+export const revalidate = 60;
+
 export default async function HomePage() {
   const imported = hasImportedContent();
   const posts = imported ? await listLatestPosts(12) : [];
   const sections = imported ? await listSections(12) : [];
+
+  // Debug: log posts to console (visible in Vercel logs)
+  console.log(`[HomePage] Fetched ${posts.length} posts`);
+  if (posts.length > 0) {
+    console.log(`[HomePage] First post: ${posts[0].title} (${posts[0].publishedAt})`);
+  }
 
   return (
     <div className="flex flex-col gap-20 pb-20">
