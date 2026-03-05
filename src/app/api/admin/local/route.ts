@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
           return NextResponse.json(dbRowToPost(result[0]));
         }
 
-        const posts = await db`SELECT * FROM posts ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+        const posts = await db`SELECT * FROM posts ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT ${limit} OFFSET ${offset}`;
         const countResult = await db`SELECT COUNT(*) as total FROM posts`;
         const total = parseInt(countResult[0].total, 10);
 
