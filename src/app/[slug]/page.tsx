@@ -10,8 +10,8 @@ import { getPostBySlug } from "@/lib/db-content";
 
 const RESERVED = new Set(["about", "category", "post", "api", "_next", "favicon.ico"]);
 
-// Use dynamic rendering instead of static generation to avoid build size limits
-export const dynamicParams = true;
+// Force dynamic rendering to avoid generating 9000+ static pages at build time
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
     params,
