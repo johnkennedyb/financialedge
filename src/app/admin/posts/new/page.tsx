@@ -19,7 +19,6 @@ export default function NewPostPage() {
     content: "",
     category: "",
     status: "draft" as "draft" | "publish" | "scheduled",
-    publishedAt: "",
     featuredImage: "",
     tags: "",
   });
@@ -113,7 +112,7 @@ export default function NewPostPage() {
         status: status,
         categories: formData.category ? [categories.find(c => c.name === formData.category)?.slug || formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
-        author: 'admin', // Default author
+        author: 'admin',
         featuredImage: formData.featuredImage,
       };
 
@@ -316,20 +315,6 @@ export default function NewPostPage() {
           />
           <p className="text-sm text-muted mt-1">Separate tags with commas</p>
         </div>
-
-        {/* Publish Date (for scheduled posts) */}
-        {formData.status === "scheduled" && (
-          <div>
-            <label className="block text-sm font-medium mb-2">Publish Date</label>
-            <input
-              type="datetime-local"
-              name="publishedAt"
-              value={formData.publishedAt}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent"
-            />
-          </div>
-        )}
       </div>
     </div>
   );
