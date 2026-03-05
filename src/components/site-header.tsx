@@ -120,51 +120,52 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
     // }
 
     return (
-        <header
-            className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-                ? "border-b border-border bg-background/80 backdrop-blur-md py-3"
-                : "bg-transparent py-5"
-                }`}
-        >
-            <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6">
-                <Link href="/" className="flex items-center gap-2.5 group">
-                    <span className="relative h-12 w-[220px] overflow-hidden sm:h-14 sm:w-[260px]">
-                        <Image
-                            src="/logo.png"
-                            alt="Financial EDGE"
-                            fill
-                            className="object-contain object-left"
-                            priority
-                        />
-                    </span>
-                </Link>
+        <>
+            <header
+                className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
+                    ? "border-b border-border bg-background/80 backdrop-blur-md py-3"
+                    : "bg-transparent py-5"
+                    }`}
+            >
+                <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6">
+                    <Link href="/" className="flex items-center gap-2.5 group">
+                        <span className="relative h-12 w-[220px] overflow-hidden sm:h-14 sm:w-[260px]">
+                            <Image
+                                src="/logo.png"
+                                alt="Financial EDGE"
+                                fill
+                                className="object-contain object-left"
+                                priority
+                            />
+                        </span>
+                    </Link>
 
-                <nav className="hidden items-center gap-1 md:flex">
-                    {items.map((i) => (
-                        <Link
-                            key={i.href}
-                            href={i.href}
-                            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary hover:text-foreground ${pathname === i.href ? "text-foreground" : "text-muted"
-                                }`}
-                        >
-                            {i.label}
-                        </Link>
-                    ))}
-                </nav>
+                    <nav className="hidden items-center gap-1 md:flex">
+                        {items.map((i) => (
+                            <Link
+                                key={i.href}
+                                href={i.href}
+                                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary hover:text-foreground ${pathname === i.href ? "text-foreground" : "text-muted"
+                                    }`}
+                            >
+                                {i.label}
+                            </Link>
+                        ))}
+                    </nav>
 
-                <div className="flex items-center gap-3">
-                    <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/50 px-3 py-1.5 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent lg:flex">
-                        <SearchIcon className="text-muted" />
-                        <input
-                            type="text"
-                            placeholder="Search intelligence..."
-                            className="bg-transparent text-sm outline-none placeholder:text-muted/70"
-                        />
-                        <kbd className="hidden rounded bg-background px-1.5 py-0.5 text-[10px] font-medium text-muted lg:inline-block">⌘K</kbd>
-                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/50 px-3 py-1.5 focus-within:border-accent focus-within:ring-1 focus-within:ring-accent lg:flex">
+                            <SearchIcon className="text-muted" />
+                            <input
+                                type="text"
+                                placeholder="Search intelligence..."
+                                className="bg-transparent text-sm outline-none placeholder:text-muted/70"
+                            />
+                            <kbd className="hidden rounded bg-background px-1.5 py-0.5 text-[10px] font-medium text-muted lg:inline-block">⌘K</kbd>
+                        </div>
 
-                    {/* Theme toggle button commented out */}
-                    {/* <button
+                        {/* Theme toggle button commented out */}
+                        {/* <button
                         type="button"
                         onClick={toggleTheme}
                         aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
@@ -173,38 +174,39 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
                         {theme === "dark" ? <SunIcon /> : <MoonIcon />}
                     </button> */}
 
-                    <Link href="/about" className="btn-modern hidden lg:flex">
-                        Get Started
-                    </Link>
+                        <Link href="/about" className="btn-modern hidden lg:flex">
+                            Get Started
+                        </Link>
 
-                    <button
-                        type="button"
-                        aria-label="Open menu"
-                        aria-expanded={open}
-                        onClick={() => setOpen((v) => !v)}
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/50 text-foreground transition-all hover:bg-secondary md:hidden"
-                    >
-                        <div className="relative h-4 w-4 overflow-hidden">
-                            <span
-                                className={`absolute left-0 top-0.5 block h-0.5 w-4 rounded bg-current transition-all duration-300 ${open ? "translate-y-[6px] rotate-45" : ""
-                                    }`}
-                            />
-                            <span
-                                className={`absolute left-0 top-[7px] block h-0.5 w-4 rounded bg-current transition-all duration-300 ${open ? "opacity-0" : "opacity-100"
-                                    }`}
-                            />
-                            <span
-                                className={`absolute left-0 top-[13.5px] block h-0.5 w-4 rounded bg-current transition-all duration-300 ${open ? "-translate-y-[6.5px] -rotate-45" : ""
-                                    }`}
-                            />
-                        </div>
-                    </button>
+                        <button
+                            type="button"
+                            aria-label="Open menu"
+                            aria-expanded={open}
+                            onClick={() => setOpen((v) => !v)}
+                            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/50 text-foreground transition-all hover:bg-secondary md:hidden"
+                        >
+                            <div className="relative h-4 w-4 overflow-hidden">
+                                <span
+                                    className={`absolute left-0 top-0.5 block h-0.5 w-4 rounded bg-current transition-all duration-300 ${open ? "translate-y-[6px] rotate-45" : ""
+                                        }`}
+                                />
+                                <span
+                                    className={`absolute left-0 top-[7px] block h-0.5 w-4 rounded bg-current transition-all duration-300 ${open ? "opacity-0" : "opacity-100"
+                                        }`}
+                                />
+                                <span
+                                    className={`absolute left-0 top-[13.5px] block h-0.5 w-4 rounded bg-current transition-all duration-300 ${open ? "-translate-y-[6.5px] -rotate-45" : ""
+                                        }`}
+                                />
+                            </div>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </header>
 
             {open ? (
-                <div className="fixed inset-0 top-[73px] z-[100] bg-background/95 backdrop-blur-xl md:hidden">
-                    <div className="flex h-full flex-col p-6 animate-fe-fade-in">
+                <div className="fixed inset-0 z-[999] bg-background md:hidden" style={{ paddingTop: '73px' }}>
+                    <div className="flex h-full flex-col p-6 animate-fe-fade-in overflow-y-auto">
                         <div className="mb-8 flex items-center gap-3 rounded-2xl border border-border bg-secondary/50 p-4">
                             <SearchIcon className="h-5 w-5 text-muted" />
                             <input
@@ -237,6 +239,6 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
                     </div>
                 </div>
             ) : null}
-        </header>
+        </>
     );
 }
