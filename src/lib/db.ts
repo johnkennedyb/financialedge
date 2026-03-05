@@ -9,8 +9,5 @@ export const getDb = () => {
   return neon(connectionString);
 };
 
-// Helper function for running queries
-export const query = async (sql: string, params: any[] = []) => {
-  const db = getDb();
-  return db(sql, params);
-};
+// Usage: db`SELECT * FROM posts WHERE id = ${id}`
+// The returned db function is a tagged template literal
