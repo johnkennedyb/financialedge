@@ -49,8 +49,8 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           content: post.content,
           category: post.categories?.[0] || "",
           status: post.status === "publish" ? "publish" : post.status === "draft" ? "draft" : "scheduled",
-          featuredImage: "",
-          tags: "",
+          featuredImage: post.featuredImage || "",
+          tags: post.tags?.join(", ") || "",
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load post");
@@ -260,7 +260,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             >
               <option value="">Select a category</option>
               {categories.map(cat => (
-                <option key={cat.slug} value={cat.name}>{cat.name}</option>
+                <option key={cat.slug} value={cat.slug}>{cat.name}</option>
               ))}
             </select>
           </div>
