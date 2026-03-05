@@ -205,7 +205,7 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
             </header>
 
             {open ? (
-                <div className="fixed inset-0 z-[999] bg-background md:hidden" style={{ paddingTop: '73px' }}>
+                <div className="fixed left-0 right-0 top-[73px] bottom-0 z-[999] bg-background md:hidden">
                     <div className="flex h-full flex-col p-6 animate-fe-fade-in overflow-y-auto">
                         <div className="mb-8 flex items-center gap-3 rounded-2xl border border-border bg-secondary/50 p-4">
                             <SearchIcon className="h-5 w-5 text-muted" />
