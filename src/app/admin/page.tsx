@@ -43,8 +43,8 @@ export default function AdminDashboard() {
           totalPages: analytics.totalPages || 0,
           totalCategories: analytics.totalCategories || 0,
           totalMedia: analytics.totalMedia || 0,
-          recentPosts: Array.isArray(posts) ? posts.slice(0, 5) : [],
-          recentPages: Array.isArray(pages) ? pages.slice(0, 3) : [],
+          recentPosts: posts?.posts?.slice(0, 5) || [],
+          recentPages: pages?.slice(0, 3) || [],
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load dashboard data");
@@ -161,8 +161,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === "published" || post.status === "publish"
-                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                   }`}>
                   {post.status || "draft"}
                 </span>
@@ -189,8 +189,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${page.status === "published" || page.status === "publish"
-                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                   }`}>
                   {page.status || "draft"}
                 </span>

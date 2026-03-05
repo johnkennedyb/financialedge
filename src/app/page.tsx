@@ -3,16 +3,12 @@ import Image from "next/image";
 
 import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
-import { hasImportedContent, listLatestPosts, listSections } from "@/lib/local-content";
+import { hasImportedContent, listLatestPosts, listSections } from "@/lib/db-content";
 
 export default async function HomePage() {
   const imported = hasImportedContent();
-  const offlinePosts = imported ? listLatestPosts(12) : [];
-  const offlineSections = imported ? listSections(12) : [];
-
-  const useLive = false;
-  const posts = offlinePosts;
-  const sections = offlineSections;
+  const posts = imported ? await listLatestPosts(12) : [];
+  const sections = imported ? await listSections(12) : [];
 
   return (
     <div className="flex flex-col gap-20 pb-20">
@@ -74,7 +70,7 @@ export default async function HomePage() {
               <div className="md:col-span-8 bento-item group overflow-hidden p-0 relative min-h-[400px]">
                 {posts[0] && (
                   <>
-                    <FeaturedBentoItem item={posts[0]} isLive={useLive} />
+                    <FeaturedBentoItem item={posts[0]} />
                   </>
                 )}
               </div>
@@ -117,12 +113,10 @@ export default async function HomePage() {
   );
 }
 
-function FeaturedBentoItem({ item, isLive }: { item: any, isLive: boolean }) {
-  const title = isLive ? item.title?.rendered : item.title;
-  const description = isLive ? item.excerpt?.rendered : item.description;
-  const image = isLive
-    ? item._embedded?.["wp:featuredmedia"]?.[0]?.source_url
-    : item.featuredImage;
+function FeaturedBentoItem({ item }: { item: any }) {
+  const title = item.title;
+  const description = item.description;
+  const image = item.featuredImage;
   const slug = String(item.slug || '');
 
   const fallbackImages = [

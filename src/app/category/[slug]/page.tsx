@@ -4,9 +4,9 @@ import Link from "next/link";
 import LocalPostCard from "@/components/local-post-card";
 import {
     hasImportedContent,
-    readCategoryIndex,
-    readContentIndex,
-} from "@/lib/local-content";
+    getPostsBySection,
+    listSections,
+} from "@/lib/db-content";
 
 export async function generateMetadata({
     params,
@@ -49,22 +49,10 @@ export default async function CategoryPage({
         );
     }
 
-    const offlineCat = readCategoryIndex(slug);
-    const offlineIdx = readContentIndex();
-    const offlineItems = (() => {
-        if (!offlineIdx) return [];
-        if (offlineCat?.posts?.length) {
-            return offlineCat.posts.map((s: string) => offlineIdx.items[s]).filter(Boolean);
-        }
-
-        return Object.values(offlineIdx.items).filter(
-            (i) => i.type === "post" && i.sectionSlug === slug
-        );
-    })();
-
-    const useLive = false;
-    const categoryName = (offlineItems as any[])[0]?.section ?? slug;
-    const items = offlineItems;
+    const posts = await getPostsBySection(slug, 50);
+    const sections = await listSections(20);
+    const category = sections.find(s => s.slug === slug);
+    const categoryName = category?.section || slug;
 
     return (
         <div className="flex flex-col gap-16 pb-20">
@@ -96,13 +84,13 @@ export default async function CategoryPage({
 
             {/* Content Grid */}
             <section className="mx-auto w-full max-w-7xl px-6">
-                {items.length === 0 ? (
+                {posts.length === 0 ? (
                     <div className="bento-item flex flex-col items-center justify-center py-20 text-center animate-fe-fade-in">
                         <p className="text-lg font-semibold text-muted">No signals detected in this sector.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {(items as any[]).map((i, idx) => (
+                        {(posts as any[]).map((i, idx) => (
                             <div key={i.slug} className="animate-fe-fade-up" style={{ animationDelay: `${idx * 50}ms` }}>
                                 <LocalPostCard item={i} />
                             </div>
