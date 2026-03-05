@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getDb } from "@/lib/db";
 
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
@@ -51,6 +52,16 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await response.json();
+
+    // Save to local database so it appears in media library
+    try {
+      const db = getDb();
+      await db`INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
+        VALUES (${result.public_id}, ${file.name}, ${file.type || "image/jpeg"}, ${result.bytes || 0}, ${result.secure_url}, ${""}, ${""})
+        ON CONFLICT (url) DO NOTHING`;
+    } catch (dbError) {
+      console.error("Failed to save Cloudinary upload to database:", dbError);
+    }
 
     return NextResponse.json({
       url: result.secure_url,
