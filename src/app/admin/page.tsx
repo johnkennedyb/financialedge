@@ -2,20 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAnalytics } from "@/lib/admin-api";
+import { getAnalytics, getAllPosts, getAllPages } from "@/lib/admin-api";
 
 interface DashboardStats {
   totalPosts: number;
   totalPages: number;
   totalCategories: number;
   totalMedia: number;
-  recentActivity: Array<{
-    id: string;
-    type: "post" | "page" | "media";
-    title: string;
-    date: string;
-    status: "published" | "draft" | "updated";
-  }>;
+  recentPosts: any[];
+  recentPages: any[];
 }
 
 export default function AdminDashboard() {
@@ -24,7 +19,8 @@ export default function AdminDashboard() {
     totalPages: 0,
     totalCategories: 0,
     totalMedia: 0,
-    recentActivity: [],
+    recentPosts: [],
+    recentPages: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,32 +31,20 @@ export default function AdminDashboard() {
         setLoading(true);
         setError(null);
 
-        const data = await getAnalytics();
-
-        // Process recent activity from real data
-        const recentActivity = [
-          ...data.posts.slice(0, 3).map((post: any) => ({
-            id: post.slug?.toString?.() ?? post.slug ?? post.id?.toString?.() ?? String(post.id ?? ""),
-            type: "post" as const,
-            title: String(post.title ?? post.slug ?? "Untitled").replace(/<[^>]*>/g, ""),
-            date: String(post.publishedAt ?? post.date ?? "").split("T")[0],
-            status: (post.status ?? "updated") as "published" | "draft" | "updated",
-          })),
-          ...data.pages.slice(0, 2).map((page: any) => ({
-            id: page.slug?.toString?.() ?? page.slug ?? page.id?.toString?.() ?? String(page.id ?? ""),
-            type: "page" as const,
-            title: String(page.title ?? page.slug ?? "Untitled").replace(/<[^>]*>/g, ""),
-            date: String(page.publishedAt ?? page.date ?? "").split("T")[0],
-            status: (page.status ?? "updated") as "published" | "draft" | "updated",
-          })),
-        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
+        // Fetch analytics counts and recent content in parallel
+        const [analytics, posts, pages] = await Promise.all([
+          getAnalytics(),
+          getAllPosts(),
+          getAllPages(),
+        ]);
 
         setStats({
-          totalPosts: data.totalPosts,
-          totalPages: data.totalPages,
-          totalCategories: data.totalCategories,
-          totalMedia: data.totalMedia,
-          recentActivity,
+          totalPosts: analytics.totalPosts || 0,
+          totalPages: analytics.totalPages || 0,
+          totalCategories: analytics.totalCategories || 0,
+          totalMedia: analytics.totalMedia || 0,
+          recentPosts: Array.isArray(posts) ? posts.slice(0, 5) : [],
+          recentPages: Array.isArray(pages) ? pages.slice(0, 3) : [],
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load dashboard data");
@@ -160,31 +144,59 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Posts */}
       <div className="rounded-xl border border-border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+        <h2 className="text-xl font-semibold mb-4">Recent Posts</h2>
         <div className="space-y-3">
-          {stats.recentActivity.map((activity) => (
-            <div key={activity.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-              <div className="flex items-center gap-3">
-                <span className="text-lg">
-                  {activity.type === "post" ? "📝" : activity.type === "page" ? "📄" : "🖼️"}
-                </span>
-                <div>
-                  <p className="font-medium">{activity.title}</p>
-                  <p className="text-sm text-muted">{activity.date}</p>
+          {stats.recentPosts.length === 0 ? (
+            <p className="text-muted">No posts yet</p>
+          ) : (
+            stats.recentPosts.map((post: any) => (
+              <div key={post.id || post.slug} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">📝</span>
+                  <div>
+                    <p className="font-medium">{post.title || "Untitled"}</p>
+                    <p className="text-sm text-muted">{post.publishedAt || post.date || "No date"}</p>
+                  </div>
                 </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === "published" || post.status === "publish"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                  }`}>
+                  {post.status || "draft"}
+                </span>
               </div>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${activity.status === "published"
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : activity.status === "draft"
-                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                  : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                }`}>
-                {activity.status}
-              </span>
-            </div>
-          ))}
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Recent Pages */}
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="text-xl font-semibold mb-4">Recent Pages</h2>
+        <div className="space-y-3">
+          {stats.recentPages.length === 0 ? (
+            <p className="text-muted">No pages yet</p>
+          ) : (
+            stats.recentPages.map((page: any) => (
+              <div key={page.id || page.slug} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">📄</span>
+                  <div>
+                    <p className="font-medium">{page.title || "Untitled"}</p>
+                    <p className="text-sm text-muted">{page.publishedAt || page.date || "No date"}</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${page.status === "published" || page.status === "publish"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                  }`}>
+                  {page.status || "draft"}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
