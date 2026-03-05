@@ -19,7 +19,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     excerpt: "",
     content: "",
     category: "",
-    status: "draft" as "draft" | "published" | "scheduled",
+    status: "draft" as "draft" | "publish" | "scheduled",
     featuredImage: "",
     tags: "",
   });
@@ -48,7 +48,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           excerpt: post.excerpt || "",
           content: post.content,
           category: post.categories?.[0] || "",
-          status: post.status as "draft" | "published" | "scheduled",
+          status: post.status === "publish" ? "publish" : post.status === "draft" ? "draft" : "scheduled",
           featuredImage: "",
           tags: "",
         });
@@ -106,7 +106,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     }
   };
 
-  const handleSave = async (status: "draft" | "published") => {
+  const handleSave = async (status: "draft" | "publish") => {
     setSaving(true);
     setError(null);
 
@@ -116,7 +116,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         slug: formData.slug,
         excerpt: formData.excerpt,
         content: formData.content,
-        status: status as 'draft' | 'publish' | 'private' | 'trash',
+        status: status,
         categories: formData.category ? [formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         author: 'admin', // Default author
@@ -178,7 +178,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             {saving ? "Saving..." : "Save Draft"}
           </button>
           <button
-            onClick={() => handleSave("published")}
+            onClick={() => handleSave("publish")}
             disabled={saving}
             className="btn-modern"
           >
@@ -274,7 +274,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="draft">Draft</option>
-              <option value="published">Published</option>
+              <option value="publish">Published</option>
               <option value="scheduled">Scheduled</option>
             </select>
           </div>

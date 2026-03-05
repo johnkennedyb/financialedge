@@ -13,6 +13,24 @@ interface DashboardStats {
   recentPages: any[];
 }
 
+// Helper function to format dates nicely
+function formatDate(dateString: string | null | undefined): string {
+  if (!dateString) return "No date";
+
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "No date";
+
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return "No date";
+  }
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
@@ -157,7 +175,7 @@ export default function AdminDashboard() {
                   <span className="text-lg">📝</span>
                   <div>
                     <p className="font-medium">{post.title || "Untitled"}</p>
-                    <p className="text-sm text-muted">{post.publishedAt || post.date || "No date"}</p>
+                    <p className="text-sm text-muted">{formatDate(post.publishedAt || post.date)}</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === "published" || post.status === "publish"
@@ -185,7 +203,7 @@ export default function AdminDashboard() {
                   <span className="text-lg">📄</span>
                   <div>
                     <p className="font-medium">{page.title || "Untitled"}</p>
-                    <p className="text-sm text-muted">{page.publishedAt || page.date || "No date"}</p>
+                    <p className="text-sm text-muted">{formatDate(page.publishedAt || page.date)}</p>
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${page.status === "published" || page.status === "publish"

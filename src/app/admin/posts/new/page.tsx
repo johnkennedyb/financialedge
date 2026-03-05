@@ -18,7 +18,7 @@ export default function NewPostPage() {
     excerpt: "",
     content: "",
     category: "",
-    status: "draft" as "draft" | "published" | "scheduled",
+    status: "draft" as "draft" | "publish" | "scheduled",
     publishedAt: "",
     featuredImage: "",
     tags: "",
@@ -97,7 +97,7 @@ export default function NewPostPage() {
     }
   };
 
-  const handleSave = async (status: "draft" | "published") => {
+  const handleSave = async (status: "draft" | "publish") => {
     setSaving(true);
     setError(null);
 
@@ -110,7 +110,7 @@ export default function NewPostPage() {
         slug: formData.slug,
         excerpt: formData.excerpt,
         content: formData.content,
-        status: status as 'draft' | 'publish' | 'private' | 'trash',
+        status: status,
         categories: formData.category ? [formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         author: 'admin', // Default author
@@ -144,7 +144,7 @@ export default function NewPostPage() {
             {saving ? "Saving..." : "Save Draft"}
           </button>
           <button
-            onClick={() => handleSave("published")}
+            onClick={() => handleSave("publish")}
             disabled={saving}
             className="btn-modern"
           >
@@ -241,7 +241,7 @@ export default function NewPostPage() {
               className="w-full rounded-lg border border-border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="draft">Draft</option>
-              <option value="published">Published</option>
+              <option value="publish">Publish</option>
               <option value="scheduled">Scheduled</option>
             </select>
           </div>
