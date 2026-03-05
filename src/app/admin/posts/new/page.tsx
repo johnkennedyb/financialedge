@@ -9,7 +9,7 @@ export default function NewPostPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ export default function NewPostPage() {
     const loadCategories = async () => {
       try {
         const cats = await getAllCategories();
-        setCategories(cats.map((cat: any) => cat.name));
+        setCategories(cats.map((cat: any) => ({ name: cat.name, slug: cat.slug })));
       } catch (err) {
         console.error("Failed to load categories:", err);
       } finally {
@@ -111,7 +111,7 @@ export default function NewPostPage() {
         excerpt: formData.excerpt,
         content: formData.content,
         status: status,
-        categories: formData.category ? [formData.category] : [],
+        categories: formData.category ? [categories.find(c => c.name === formData.category)?.slug || formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         author: 'admin', // Default author
         featuredImage: formData.featuredImage,
@@ -227,7 +227,7 @@ export default function NewPostPage() {
             >
               <option value="">Select a category</option>
               {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat.slug} value={cat.name}>{cat.name}</option>
               ))}
             </select>
           </div>

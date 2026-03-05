@@ -11,7 +11,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -32,7 +32,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
         // Load categories
         const cats = await getAllCategories();
-        setCategories(cats.map((cat: any) => cat.name));
+        setCategories(cats.map((cat: any) => ({ name: cat.name, slug: cat.slug })));
 
         // Load post data
         const post = await getPostById(id);
@@ -117,7 +117,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         excerpt: formData.excerpt,
         content: formData.content,
         status: status,
-        categories: formData.category ? [formData.category] : [],
+        categories: formData.category ? [categories.find(c => c.name === formData.category)?.slug || formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         author: 'admin', // Default author
         featuredImage: formData.featuredImage,
@@ -260,7 +260,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             >
               <option value="">Select a category</option>
               {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat.slug} value={cat.name}>{cat.name}</option>
               ))}
             </select>
           </div>
