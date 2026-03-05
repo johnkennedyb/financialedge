@@ -83,7 +83,7 @@ export async function listSections(limit = 12): Promise<{ section: string; slug:
       c.slug,
       COUNT(p.id)::int as count
     FROM categories c
-    LEFT JOIN posts p ON p.categories @> ARRAY[c.slug] AND p.status = 'publish'
+    LEFT JOIN posts p ON c.slug = ANY(p.categories) AND p.status = 'publish'
     GROUP BY c.id, c.name, c.slug
     ORDER BY count DESC
     LIMIT ${limit}
@@ -148,7 +148,7 @@ export async function getPostsBySection(sectionSlug: string, limit = 12): Promis
       status
     FROM posts 
     WHERE status = 'publish'
-      AND categories @> ARRAY[${sectionSlug}]
+      AND ${sectionSlug} = ANY(categories)
     ORDER BY published_at DESC NULLS LAST, created_at DESC
     LIMIT ${limit}
   `;
