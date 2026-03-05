@@ -6,7 +6,7 @@ import Prose from "@/components/prose";
 import ShareButtons from "@/components/share-buttons";
 import SafeImage from "@/components/safe-image";
 import { decodeHtmlEntities } from "@/lib/html";
-import { readImportedPage, readImportedPost } from "@/lib/local-content";
+import { getPostBySlug, hasImportedContent } from "@/lib/db-content";
 
 const RESERVED = new Set(["about", "category", "post", "api", "_next", "favicon.ico"]);
 
@@ -18,19 +18,17 @@ export async function generateMetadata({
     const { slug } = await params;
     if (RESERVED.has(slug)) return {};
 
-    const post = readImportedPost(slug);
-    const page = post ? null : readImportedPage(slug);
-    const offlineItem = post ?? page;
+    const item = await getPostBySlug(slug);
 
-    if (!offlineItem) {
+    if (!item) {
         return {
             title: "Not found",
         };
     }
 
     return {
-        title: decodeHtmlEntities(offlineItem.title ?? "Untitled"),
-        description: offlineItem.description ?? undefined,
+        title: decodeHtmlEntities(item.title ?? "Untitled"),
+        description: item.description ?? undefined,
     };
 }
 
@@ -42,11 +40,9 @@ export default async function SlugPage({
     const { slug } = await params;
     if (RESERVED.has(slug)) notFound();
 
-    const post = readImportedPost(slug);
-    const page = post ? null : readImportedPage(slug);
-    const offlineItem = post ?? page;
+    const item = await getPostBySlug(slug);
 
-    if (!offlineItem) {
+    if (!item) {
         return (
             <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center py-20 text-center animate-fe-fade-in">
                 <div className="h-20 w-20 rounded-full bg-secondary flex items-center justify-center mb-6">
@@ -65,15 +61,13 @@ export default async function SlugPage({
         );
     }
 
-    const isLive = false;
-
-    const title = decodeHtmlEntities(offlineItem.title ?? "Untitled");
-    const description = offlineItem.description;
-    const featuredImage = offlineItem.featuredImage;
-    const html = offlineItem.html;
-    const section = offlineItem.section;
-    const sectionSlug = offlineItem.sectionSlug;
-    const publishedAt = offlineItem.publishedAt;
+    const title = decodeHtmlEntities(item.title ?? "Untitled");
+    const description = item.description;
+    const featuredImage = item.featuredImage;
+    const html = item.html;
+    const section = item.section;
+    const sectionSlug = item.sectionSlug;
+    const publishedAt = item.publishedAt;
 
     const dateToDisplay = publishedAt && typeof publishedAt === 'string' ? publishedAt : null;
 
@@ -140,7 +134,7 @@ export default async function SlugPage({
                             <div className="space-y-3">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted">Source</span>
-                                    <span className="font-semibold">{isLive ? 'Live API' : 'Archive'}</span>
+                                    <span className="font-semibold">Database</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted">Stability</span>
