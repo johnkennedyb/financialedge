@@ -41,7 +41,7 @@ export default function PostsPage() {
           status: (post.status === "publish" ? "published" : post.status) as "published" | "draft" | "scheduled",
           category: post.categories?.[0] || post.sectionSlug || "Uncategorized",
           author: post.author || "Unknown",
-          publishedAt: post.createdAt ? String(post.createdAt).split("T")[0] : "",
+          publishedAt: post.publishedAt ? String(post.publishedAt).split("T")[0] : post.createdAt ? String(post.createdAt).split("T")[0] : "",
           updatedAt: post.updatedAt ? String(post.updatedAt).split("T")[0] : "",
           excerpt: String(post.excerpt ?? ""),
         }));
