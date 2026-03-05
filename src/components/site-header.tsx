@@ -203,7 +203,7 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
             </div>
 
             {open ? (
-                <div className="fixed inset-0 top-[73px] z-40 bg-background/80 backdrop-blur-xl md:hidden">
+                <div className="fixed inset-0 top-[73px] z-[100] bg-background/95 backdrop-blur-xl md:hidden">
                     <div className="flex h-full flex-col p-6 animate-fe-fade-in">
                         <div className="mb-8 flex items-center gap-3 rounded-2xl border border-border bg-secondary/50 p-4">
                             <SearchIcon className="h-5 w-5 text-muted" />
