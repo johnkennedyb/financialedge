@@ -6,15 +6,12 @@ import Prose from "@/components/prose";
 import ShareButtons from "@/components/share-buttons";
 import SafeImage from "@/components/safe-image";
 import { decodeHtmlEntities } from "@/lib/html";
-import { getPostBySlug, getAllPostSlugs } from "@/lib/db-content";
+import { getPostBySlug } from "@/lib/db-content";
 
 const RESERVED = new Set(["about", "category", "post", "api", "_next", "favicon.ico"]);
 
-// Tell Next.js which pages to pre-render
-export async function generateStaticParams() {
-    const slugs = await getAllPostSlugs();
-    return slugs.map((slug) => ({ slug }));
-}
+// Use dynamic rendering instead of static generation to avoid build size limits
+export const dynamicParams = true;
 
 export async function generateMetadata({
     params,
