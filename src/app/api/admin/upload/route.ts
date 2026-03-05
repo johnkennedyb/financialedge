@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { getDb } from "@/lib/db";
 
 export const runtime = "nodejs";
 
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
     const url = `/media/${filename}`;
     const id = sha1(url);
 
+    // Save to filesystem metadata
     const meta = readJson<Record<string, any>>(mediaMetaPath(), {});
     meta[id] = {
       id,
@@ -74,6 +76,17 @@ export async function POST(request: NextRequest) {
       uploadedAt: nowIso(),
     };
     writeJson(mediaMetaPath(), meta);
+
+    // Also save to database so it appears in media library
+    try {
+      const db = getDb();
+      await db`INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
+        VALUES (${filename}, ${file.name}, ${file.type || "application/octet-stream"}, ${bytes.length}, ${url}, ${""}, ${""})
+        ON CONFLICT (url) DO NOTHING`;
+    } catch (dbError) {
+      console.error("Failed to save to database:", dbError);
+      // Continue even if DB fails - file is still saved
+    }
 
     return NextResponse.json(meta[id], { status: 201 });
   } catch (error) {
