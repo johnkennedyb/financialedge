@@ -57,21 +57,25 @@ export async function POST(request: NextRequest) {
     let mediaId = null;
     try {
       const db = getDb();
-      const insertResult = await db`INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
-        VALUES (${result.public_id}, ${file.name}, ${file.type || "image/jpeg"}, ${result.bytes || 0}, ${result.secure_url}, ${""}, ${""})
-        ON CONFLICT (url) DO UPDATE SET
-          filename = EXCLUDED.filename,
-          original_name = EXCLUDED.original_name,
-          mime_type = EXCLUDED.mime_type,
-          size = EXCLUDED.size
-        RETURNING id`;
-      mediaId = insertResult[0]?.id;
+      // First try: simple insert (works if no duplicate)
+      try {
+        const insertResult = await db`INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
+          VALUES (${result.public_id}, ${file.name}, ${file.type || "image/jpeg"}, ${result.bytes || 0}, ${result.secure_url}, ${""}, ${""})
+          RETURNING id`;
+        mediaId = insertResult[0]?.id;
+      } catch (insertError: any) {
+        // If duplicate URL error, try to get existing media ID
+        if (insertError?.message?.includes('duplicate') || insertError?.code === '23505') {
+          const existing = await db`SELECT id FROM media WHERE url = ${result.secure_url}`;
+          mediaId = existing[0]?.id;
+        } else {
+          throw insertError;
+        }
+      }
     } catch (dbError) {
       console.error("Failed to save Cloudinary upload to database:", dbError);
-      return NextResponse.json(
-        { error: "Image uploaded to Cloudinary but failed to save to media library: " + (dbError instanceof Error ? dbError.message : String(dbError)) },
-        { status: 500 }
-      );
+      // Don't fail the upload - image is already on Cloudinary
+      // Just log the error and continue
     }
 
     return NextResponse.json({
