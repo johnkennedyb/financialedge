@@ -13,15 +13,15 @@ export default function FeaturedImage({ src, alt }: FeaturedImageProps) {
 
   return (
     <>
-      <div 
-        className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-3xl border border-border shadow-elevated animate-fe-fade-up cursor-pointer hover:shadow-lg transition-shadow"
+      <div
+        className="relative aspect-[4/3] sm:aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border shadow-elevated animate-fe-fade-up cursor-pointer hover:shadow-lg transition-shadow bg-secondary/50"
         style={{ animationDelay: '100ms' }}
         onClick={() => setIsLightboxOpen(true)}
       >
         <img
           src={src}
           alt={alt}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           sizes="(max-width: 1024px) 100vw, 1200px"
         />
         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center">
@@ -30,7 +30,7 @@ export default function FeaturedImage({ src, alt }: FeaturedImageProps) {
           </span>
         </div>
       </div>
-      
+
       <ImageLightbox
         src={src}
         alt={alt}

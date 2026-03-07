@@ -108,7 +108,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     }
   };
 
-  const handleSave = async (status: "draft" | "publish") => {
+  const handleSave = async () => {
     setSaving(true);
     setError(null);
 
@@ -118,7 +118,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         slug: formData.slug,
         excerpt: formData.excerpt,
         content: formData.content,
-        status: status,
+        status: formData.status,
         categories: formData.category ? [categories.find(c => c.name === formData.category)?.slug || formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
         author: formData.author || 'admin',
@@ -173,14 +173,14 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => handleSave("draft")}
+            onClick={() => handleSave()}
             disabled={saving}
             className="btn-modern bg-secondary text-secondary-foreground hover:bg-secondary/80"
           >
-            {saving ? "Saving..." : "Save Draft"}
+            {saving ? "Saving..." : "Save"}
           </button>
           <button
-            onClick={() => handleSave("publish")}
+            onClick={() => handleSave()}
             disabled={saving}
             className="btn-modern"
           >

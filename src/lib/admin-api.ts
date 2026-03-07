@@ -6,7 +6,7 @@ export interface LocalPost {
   slug: string;
   content: string;
   excerpt: string;
-  status: 'draft' | 'publish' | 'private' | 'trash';
+  status: 'draft' | 'publish' | 'private' | 'trash' | 'scheduled';
   author: string;
   createdAt: string;
   updatedAt: string;
