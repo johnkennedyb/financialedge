@@ -76,7 +76,7 @@ export default async function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
               {/* Featured Post - Large Bento */}
-              <div className="md:col-span-8 bento-item group overflow-hidden p-0 relative min-h-[400px]">
+              <div className="md:col-span-8 bento-item group overflow-hidden p-0 relative h-[300px]">
                 {posts[0] && (
                   <>
                     <FeaturedBentoItem item={posts[0]} />
@@ -144,7 +144,7 @@ function FeaturedBentoItem({ item }: { item: any }) {
         fallbackSrc={fallbackImages[imgIndex]}
         alt={title || "Featured"}
         fill
-        className="object-cover transition-transform duration-700 group-hover:scale-105"
+        className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
         priority
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
