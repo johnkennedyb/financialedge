@@ -131,7 +131,9 @@ export async function GET(request: NextRequest) {
       }
 
       case "media": {
+        console.log("[API] Fetching media from database...");
         const media = await db`SELECT * FROM media ORDER BY uploaded_at DESC`;
+        console.log(`[API] Found ${media?.length || 0} media items`);
         return NextResponse.json(
           media.map((m: any) => ({
             id: String(m.id),

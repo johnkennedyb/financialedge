@@ -22,6 +22,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     status: "draft" as "draft" | "publish" | "scheduled",
     featuredImage: "",
     tags: "",
+    author: "",
   });
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           status: post.status === "publish" ? "publish" : post.status === "draft" ? "draft" : "scheduled",
           featuredImage: post.featuredImage || "",
           tags: post.tags?.join(", ") || "",
+          author: post.author || "",
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load post");
@@ -119,7 +121,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         status: status,
         categories: formData.category ? [categories.find(c => c.name === formData.category)?.slug || formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
-        author: 'admin', // Default author
+        author: formData.author || 'admin',
         featuredImage: formData.featuredImage,
       };
 
@@ -196,6 +198,19 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
       {/* Form */}
       <div className="space-y-6">
+        {/* Author */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Author</label>
+          <input
+            type="text"
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            placeholder="Enter author name..."
+            className="w-full rounded-lg border border-border bg-background px-4 py-2 placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
+          />
+        </div>
+
         {/* Title */}
         <div>
           <label className="block text-sm font-medium mb-2">Title</label>

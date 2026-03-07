@@ -21,42 +21,58 @@ export default function MediaPage() {
   const [uploading, setUploading] = useState(false);
   const [view, setView] = useState<"grid" | "list">("grid");
 
-  useEffect(() => {
-    const loadMedia = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const wpMedia = await getAllMedia();
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
-        const formattedMedia: MediaFile[] = wpMedia.map((media: any) => {
-          const mime = String(media.mimeType ?? "");
-          const type: MediaFile["type"] = mime.startsWith("image/")
-            ? "image"
-            : mime.startsWith("video/")
-              ? "video"
-              : "document";
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
-          return {
-            id: String(media.id ?? ""),
-            name: String(media.originalName ?? media.filename ?? "Untitled"),
-            url: String(media.url ?? ""),
-            type,
-            size: Number(media.size ?? 0),
-            uploadedAt: String(media.uploadedAt ?? "").split("T")[0],
-          };
-        });
+  const loadMedia = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setDebugInfo("Fetching media...");
 
-        setMediaFiles(formattedMedia);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load media");
-        console.error("Media error:", err);
-      } finally {
-        setLoading(false);
+      const wpMedia = await getAllMedia();
+      setDebugInfo(`Fetched ${wpMedia?.length || 0} items from API`);
+
+      if (!wpMedia || !Array.isArray(wpMedia)) {
+        setDebugInfo("Invalid response format from API");
+        setMediaFiles([]);
+        return;
       }
-    };
 
+      const formattedMedia: MediaFile[] = wpMedia.map((media: any) => {
+        const mime = String(media.mimeType ?? "");
+        const type: MediaFile["type"] = mime.startsWith("image/")
+          ? "image"
+          : mime.startsWith("video/")
+            ? "video"
+            : "document";
+
+        return {
+          id: String(media.id ?? ""),
+          name: String(media.originalName ?? media.filename ?? "Untitled"),
+          url: String(media.url ?? ""),
+          type,
+          size: Number(media.size ?? 0),
+          uploadedAt: String(media.uploadedAt ?? "").split("T")[0],
+        };
+      });
+
+      setMediaFiles(formattedMedia);
+      setDebugInfo(`Displaying ${formattedMedia.length} media files`);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Failed to load media";
+      setError(errorMsg);
+      setDebugInfo(`Error: ${errorMsg}`);
+      console.error("Media error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadMedia();
-  }, []);
+  }, [lastRefresh]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -150,8 +166,19 @@ export default function MediaPage() {
         <div>
           <h1 className="text-3xl font-bold">Media Library</h1>
           <p className="text-muted">Manage your images, videos, and documents</p>
+          <p className="text-xs text-muted mt-1">Last updated: {lastRefresh.toLocaleTimeString()}</p>
+          {debugInfo && (
+            <p className="text-xs text-accent mt-1">Debug: {debugInfo}</p>
+          )}
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setLastRefresh(new Date())}
+            disabled={loading}
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm hover:bg-secondary disabled:opacity-50"
+          >
+            {loading ? "Loading..." : "🔄 Refresh"}
+          </button>
           <button
             onClick={() => setView(view === "grid" ? "list" : "grid")}
             className="rounded-lg border border-border bg-background px-3 py-2 text-sm hover:bg-secondary"

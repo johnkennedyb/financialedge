@@ -84,15 +84,25 @@ export default function LocalPostCard({ item }: { item: ContentIndexItem }) {
                         ) : (
                             <span />
                         )}
-                        {item.publishedAt ? (
-                            <span className="text-xs font-medium text-[color:var(--muted)]">
-                                {new Date(item.publishedAt).toLocaleDateString(undefined, {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                })}
-                            </span>
-                        ) : null}
+                        <div className="flex items-center gap-2">
+                            {item.author && (
+                                <span className="text-xs font-medium text-[color:var(--muted)]">
+                                    By {item.author}
+                                </span>
+                            )}
+                            {item.author && item.publishedAt && (
+                                <span className="text-xs text-[color:var(--muted)]">•</span>
+                            )}
+                            {item.publishedAt ? (
+                                <span className="text-xs font-medium text-[color:var(--muted)]">
+                                    {new Date(item.publishedAt).toLocaleDateString(undefined, {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                    })}
+                                </span>
+                            ) : null}
+                        </div>
                     </div>
 
                     <h3 className="mt-3 line-clamp-2 text-base font-semibold leading-6 tracking-tight text-[color:var(--foreground)]">

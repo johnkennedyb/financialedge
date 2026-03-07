@@ -21,6 +21,7 @@ export default function NewPostPage() {
     status: "draft" as "draft" | "publish" | "scheduled",
     featuredImage: "",
     tags: "",
+    author: "",
   });
 
   useEffect(() => {
@@ -112,7 +113,7 @@ export default function NewPostPage() {
         status: status,
         categories: formData.category ? [categories.find(c => c.name === formData.category)?.slug || formData.category] : [],
         tags: formData.tags ? formData.tags.split(',').map(t => t.trim()) : [],
-        author: 'admin',
+        author: formData.author || 'admin',
         featuredImage: formData.featuredImage,
       };
 
@@ -161,6 +162,19 @@ export default function NewPostPage() {
 
       {/* Form */}
       <div className="space-y-6">
+        {/* Author */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Author</label>
+          <input
+            type="text"
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            placeholder="Enter author name..."
+            className="w-full rounded-lg border border-border bg-background px-4 py-2 placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
+          />
+        </div>
+
         {/* Title */}
         <div>
           <label className="block text-sm font-medium mb-2">Title</label>

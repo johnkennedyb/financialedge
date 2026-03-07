@@ -71,6 +71,7 @@ export default async function SlugPage({
     const section = item.section;
     const sectionSlug = item.sectionSlug;
     const publishedAt = item.publishedAt;
+    const author = item.author;
 
     const dateToDisplay = publishedAt && typeof publishedAt === 'string' ? publishedAt : null;
 
@@ -105,6 +106,12 @@ export default async function SlugPage({
                                     day: "numeric",
                                 })}
                             </time>
+                        )}
+                        {author && (
+                            <>
+                                <span className="text-muted text-sm">•</span>
+                                <span className="text-sm font-medium text-muted">By {author}</span>
+                            </>
                         )}
                         <span className="text-muted text-sm">•</span>
                         <span className="text-sm font-medium text-muted uppercase tracking-widest">Research Signal</span>

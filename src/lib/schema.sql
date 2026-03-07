@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS media (
   original_name VARCHAR(255),
   mime_type VARCHAR(100),
   size INTEGER,
-  url VARCHAR(500) NOT NULL,
+  url VARCHAR(500) NOT NULL UNIQUE,
   alt_text VARCHAR(500),
   caption TEXT,
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -89,6 +89,7 @@ CREATE INDEX IF NOT EXISTS idx_posts_published_at ON posts(published_at);
 CREATE INDEX IF NOT EXISTS idx_pages_slug ON pages(slug);
 CREATE INDEX IF NOT EXISTS idx_pages_status ON pages(status);
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
+CREATE INDEX IF NOT EXISTS idx_media_url ON media(url);
 
 -- Insert default SEO settings
 INSERT INTO seo_settings (id, site_title, site_description) 

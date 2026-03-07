@@ -22,6 +22,7 @@ export type ContentItem = {
   section?: string | null;
   sectionSlug?: string | null;
   type?: "post" | "page";
+  author?: string | null;
 };
 
 export type ContentIndexItem = {
@@ -34,6 +35,7 @@ export type ContentIndexItem = {
   sourceUrl: string;
   section?: string | null;
   sectionSlug?: string | null;
+  author?: string | null;
 };
 
 // Always returns true since we have database
@@ -53,7 +55,8 @@ export async function listLatestPosts(limit = 12): Promise<ContentIndexItem[]> {
       featured_image as featuredImage,
       published_at as publishedAt,
       categories,
-      status
+      status,
+      author
     FROM posts 
     WHERE status = 'publish'
     ORDER BY published_at DESC NULLS LAST, created_at DESC
@@ -70,6 +73,7 @@ export async function listLatestPosts(limit = 12): Promise<ContentIndexItem[]> {
     sourceUrl: `/${post.slug}`,
     section: post.categories?.[0] || null,
     sectionSlug: post.categories?.[0] || null,
+    author: post.author || null,
   }));
 }
 
@@ -130,6 +134,7 @@ export async function getPostBySlug(slug: string): Promise<ContentItem | null> {
     section: post.categories?.[0] || null,
     sectionSlug: post.categories?.[0] || null,
     type: "post",
+    author: post.author || null,
   };
 }
 
@@ -145,7 +150,8 @@ export async function getPostsBySection(sectionSlug: string, limit = 12): Promis
       featured_image as featuredImage,
       published_at as publishedAt,
       categories,
-      status
+      status,
+      author
     FROM posts 
     WHERE status = 'publish'
       AND ${sectionSlug} = ANY(categories)
@@ -163,6 +169,7 @@ export async function getPostsBySection(sectionSlug: string, limit = 12): Promis
     sourceUrl: `/${post.slug}`,
     section: sectionSlug,
     sectionSlug: sectionSlug,
+    author: post.author || null,
   }));
 }
 

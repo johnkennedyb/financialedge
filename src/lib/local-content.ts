@@ -14,6 +14,7 @@ export type ImportedItem = {
   section?: string | null;
   sectionSlug?: string | null;
   type?: ImportedItemType;
+  author?: string | null;
 };
 
 export type ContentIndexItem = {
@@ -26,6 +27,7 @@ export type ContentIndexItem = {
   sourceUrl: string;
   section?: string | null;
   sectionSlug?: string | null;
+  author?: string | null;
 };
 
 export type ContentIndex = {
