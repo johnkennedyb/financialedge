@@ -95,7 +95,8 @@ export default function MediaPage() {
     try {
       const form = new FormData();
       form.append("file", selectedFile);
-      const res = await fetch("/api/admin/upload", {
+      // Use Cloudinary upload for production (Vercel has read-only filesystem)
+      const res = await fetch("/api/admin/upload/cloudinary", {
         method: "POST",
         body: form,
       });
@@ -105,16 +106,18 @@ export default function MediaPage() {
       }
       const uploaded = await res.json();
       const newMedia: MediaFile = {
-        id: String(uploaded.id),
-        name: String(uploaded.originalName ?? uploaded.filename ?? selectedFile.name),
+        id: String(uploaded.mediaId ?? Date.now()),
+        name: selectedFile.name,
         url: String(uploaded.url ?? ""),
         type: selectedFile.type.startsWith("image/") ? "image" : selectedFile.type.startsWith("video/") ? "video" : "document",
         size: Number(uploaded.size ?? selectedFile.size),
-        uploadedAt: String(uploaded.uploadedAt ?? new Date().toISOString()).split("T")[0],
+        uploadedAt: new Date().toISOString().split("T")[0],
       };
 
       setMediaFiles((prev) => [newMedia, ...prev]);
       setSelectedFile(null);
+      // Refresh the list to show the newly saved media from database
+      setLastRefresh(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

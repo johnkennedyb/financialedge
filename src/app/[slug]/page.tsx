@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import Prose from "@/components/prose";
 import ShareButtons from "@/components/share-buttons";
-import SafeImage from "@/components/safe-image";
+import FeaturedImage from "@/components/featured-image";
 import { decodeHtmlEntities } from "@/lib/html";
 import { getPostBySlug } from "@/lib/db-content";
 
@@ -119,16 +119,7 @@ export default async function SlugPage({
                 </header>
 
                 {featuredImage && (
-                    <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl border border-border shadow-elevated animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
-                        <SafeImage
-                            src={featuredImage}
-                            alt={title}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 1200px"
-                            priority
-                        />
-                    </div>
+                    <FeaturedImage src={featuredImage} alt={title} />
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-12 pt-4">

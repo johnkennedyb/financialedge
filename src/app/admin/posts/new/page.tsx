@@ -164,15 +164,19 @@ export default function NewPostPage() {
       <div className="space-y-6">
         {/* Author */}
         <div>
-          <label className="block text-sm font-medium mb-2">Author</label>
+          <label className="block text-sm font-medium mb-2">
+            Author <span className="text-destructive">*</span>
+          </label>
           <input
             type="text"
             name="author"
             value={formData.author}
             onChange={handleChange}
             placeholder="Enter author name..."
+            required
             className="w-full rounded-lg border border-border bg-background px-4 py-2 placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent"
           />
+          <p className="text-xs text-muted mt-1">Required - Enter the actual author name</p>
         </div>
 
         {/* Title */}

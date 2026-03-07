@@ -47,7 +47,7 @@ export default function SiteFooter() {
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
                     <div className="md:col-span-5 flex flex-col gap-6">
                         <div className="flex items-center gap-2.5">
-                            <span className="relative h-12 w-[240px] overflow-hidden sm:h-14 sm:w-[280px]">
+                            <span className="relative h-24 w-[380px] overflow-hidden sm:h-28 sm:w-[420px]">
                                 <Image
                                     src="/logo.png"
                                     alt="Financial EDGE"
