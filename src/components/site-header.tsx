@@ -129,7 +129,7 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
             >
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6">
                     <Link href="/" className="flex items-center gap-2.5 group">
-                        <span className="relative h-16 w-[200px] overflow-hidden sm:h-20 sm:w-[300px] md:h-24 md:w-[360px]">
+                        <span className="relative h-12 w-[150px] overflow-hidden sm:h-20 sm:w-[300px] md:h-24 md:w-[360px]">
                             <Image
                                 src="/logo.png"
                                 alt="Financial EDGE"
