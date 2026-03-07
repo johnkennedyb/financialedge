@@ -58,7 +58,7 @@ export async function listLatestPosts(limit = 12): Promise<ContentIndexItem[]> {
       status,
       author
     FROM posts 
-    WHERE status = 'publish'
+    WHERE LOWER(TRIM(status)) = 'publish'
     ORDER BY published_at DESC NULLS LAST, created_at DESC
     LIMIT ${limit}
   `;
@@ -87,7 +87,7 @@ export async function listSections(limit = 12): Promise<{ section: string; slug:
       c.slug,
       COUNT(p.id)::int as count
     FROM categories c
-    LEFT JOIN posts p ON c.slug = ANY(p.categories) AND p.status = 'publish'
+    LEFT JOIN posts p ON c.slug = ANY(p.categories) AND LOWER(TRIM(p.status)) = 'publish'
     GROUP BY c.id, c.name, c.slug
     ORDER BY count DESC
     LIMIT ${limit}
@@ -117,6 +117,7 @@ export async function getPostBySlug(slug: string): Promise<ContentItem | null> {
       status
     FROM posts 
     WHERE slug = ${slug}
+      AND LOWER(TRIM(status)) = 'publish'
     LIMIT 1
   `;
 
@@ -153,7 +154,7 @@ export async function getPostsBySection(sectionSlug: string, limit = 12): Promis
       status,
       author
     FROM posts 
-    WHERE status = 'publish'
+    WHERE LOWER(TRIM(status)) = 'publish'
       AND ${sectionSlug} = ANY(categories)
     ORDER BY published_at DESC NULLS LAST, created_at DESC
     LIMIT ${limit}
@@ -178,7 +179,7 @@ export async function getAllPostSlugs(): Promise<string[]> {
   const db = getDb();
   
   const result = await db`
-    SELECT slug FROM posts WHERE status = 'publish'
+    SELECT slug FROM posts WHERE LOWER(TRIM(status)) = 'publish'
   `;
 
   if (!result || !Array.isArray(result)) {
