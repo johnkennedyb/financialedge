@@ -97,6 +97,11 @@ export default function SectorsTickerBar({ speed = 75 }: SectorsTickerBarProps) 
         .animate-marquee-sectors {
           animation: marquee-sectors linear infinite;
         }
+        @media (max-width: 768px) {
+          .animate-marquee-sectors {
+            animation-duration: 15s !important;
+          }
+        }
       `}</style>
     </div>
   );

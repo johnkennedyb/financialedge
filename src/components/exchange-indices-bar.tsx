@@ -87,6 +87,11 @@ export default function ExchangeIndicesBar({ speed = 70 }: ExchangeIndicesBarPro
         .animate-marquee-ngx {
           animation: marquee-ngx linear infinite;
         }
+        @media (max-width: 768px) {
+          .animate-marquee-ngx {
+            animation-duration: 10s !important;
+          }
+        }
       `}</style>
     </div>
   );

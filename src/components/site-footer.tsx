@@ -111,15 +111,6 @@ export default function SiteFooter() {
 
                 <div className="flex flex-col gap-6 border-t border-border pt-8 text-sm text-muted md:flex-row md:items-center md:justify-between">
                     <p>© {new Date().getFullYear()} FinancialEDGE. Global Summit Edition.</p>
-                    <div className="flex items-center gap-6">
-                        <p className="flex items-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                            Terminal Status: Operational
-                        </p>
-                        <a href="https://financialedge.com.ng" className="font-medium text-foreground hover:text-accent transition-colors">
-                            Legacy Site ↗
-                        </a>
-                    </div>
                 </div>
             </div>
         </footer>

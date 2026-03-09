@@ -165,6 +165,11 @@ export default function StockTickerBar({ stocks = defaultStocks, speed = 160 }: 
         .animate-marquee {
           animation: marquee linear infinite;
         }
+        @media (max-width: 768px) {
+          .animate-marquee {
+            animation-duration: 15s !important;
+          }
+        }
       `}</style>
     </div>
   );

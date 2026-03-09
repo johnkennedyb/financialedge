@@ -86,6 +86,11 @@ export default function NewsTickerBar({ speed = 65 }: NewsTickerBarProps) {
         .animate-marquee-news {
           animation: marquee-news linear infinite;
         }
+        @media (max-width: 768px) {
+          .animate-marquee-news {
+            animation-duration: 15s !important;
+          }
+        }
       `}</style>
     </div>
   );
