@@ -122,110 +122,68 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* All Sectors & Categories with Posts */}
-      {imported && sections.length > 0 && (
+      {/* Category Sections - Posts grouped by category */}
+      {imported && Object.keys(postsByCategory).length > 0 && (
         <section className="mx-auto w-full max-w-7xl px-6">
-          <div className="flex flex-col gap-12">
-            {/* Section Header */}
-            <div className="flex items-end justify-between border-b border-border pb-4">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight">All Sectors & Categories</h2>
-                <p className="mt-1 text-muted">Browse all sectors with their latest intelligence</p>
-              </div>
-            </div>
+          <div className="flex flex-col gap-16">
+            {Object.entries(postsByCategory).map(([categorySlug, categoryPosts]) => {
+              const displayName = categoryDisplayNames[categorySlug] || categorySlug;
+              const visiblePosts = categoryPosts.slice(0, 6);
+              const hasMore = categoryPosts.length > 6;
 
-            {/* All Sections Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {sections.map((section) => {
-                const sectionPosts = postsByCategory[section.slug] || [];
-                const hasPosts = sectionPosts.length > 0;
-                const displayPosts = sectionPosts.slice(0, 3);
+              return (
+                <div key={categorySlug} className="flex flex-col gap-6">
+                  <div className="flex items-end justify-between border-b border-border pb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold tracking-tight capitalize">{displayName}</h2>
+                      <p className="mt-1 text-muted text-sm">{categoryPosts.length} {categoryPosts.length === 1 ? 'article' : 'articles'} in this category</p>
+                    </div>
+                    <Link
+                      href={`/category/${categorySlug}`}
+                      className="text-sm font-semibold text-accent hover:underline decoration-2 underline-offset-4 transition-all"
+                    >
+                      View all {displayName} →
+                    </Link>
+                  </div>
 
-                return (
-                  <div key={section.slug} className="flex flex-col gap-4 p-6 rounded-xl border border-border bg-background/50 hover:border-accent/50 transition-colors">
-                    {/* Section Header */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                          <span className="text-lg font-bold text-accent">{section.section.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold tracking-tight">{section.section}</h3>
-                          <p className="text-sm text-muted">{sectionPosts.length} {sectionPosts.length === 1 ? 'article' : 'articles'}</p>
-                        </div>
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {visiblePosts.map((post) => (
+                      <LocalPostCard key={post.slug} item={post} />
+                    ))}
+                  </div>
+
+                  {hasMore && (
+                    <div className="text-center">
                       <Link
-                        href={`/category/${section.slug}`}
-                        className="text-sm font-semibold text-accent hover:underline"
+                        href={`/category/${categorySlug}`}
+                        className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent transition-colors"
                       >
-                        View all →
+                        <span>+ {categoryPosts.length - 6} more articles</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </Link>
                     </div>
+                  )}
+                </div>
+              );
+            })}
 
-                    {/* Posts for this section */}
-                    {hasPosts ? (
-                      <div className="flex flex-col gap-3">
-                        {displayPosts.map((post) => (
-                          <Link
-                            key={post.slug}
-                            href={`/${post.slug}`}
-                            className="group flex gap-4 p-3 rounded-lg hover:bg-secondary/50 transition-colors"
-                          >
-                            {post.featuredImage && (
-                              <div className="relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
-                                <Image
-                                  src={post.featuredImage}
-                                  alt={post.title || ''}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            )}
-                            <div className="flex flex-col justify-center min-w-0">
-                              <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-accent transition-colors">
-                                {post.title}
-                              </h4>
-                              <p className="text-xs text-muted mt-1 line-clamp-1">
-                                {post.description?.replace(/<[^>]*>/g, '').substring(0, 100)}...
-                              </p>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="py-6 text-center">
-                        <p className="text-sm text-muted">No articles yet in this sector</p>
-                        <Link
-                          href={`/category/${section.slug}`}
-                          className="text-xs text-accent hover:underline mt-2 inline-block"
-                        >
-                          Explore sector →
-                        </Link>
-                      </div>
-                    )}
+            {uncategorizedPosts.length > 0 && (
+              <div className="flex flex-col gap-6">
+                <div className="flex items-end justify-between border-b border-border pb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold tracking-tight">Latest Updates</h2>
+                    <p className="mt-1 text-muted text-sm">Recent articles across all topics</p>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Uncategorized Posts */}
-      {imported && uncategorizedPosts.length > 0 && (
-        <section className="mx-auto w-full max-w-7xl px-6">
-          <div className="flex flex-col gap-6">
-            <div className="flex items-end justify-between border-b border-border pb-4">
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight">Latest Updates</h2>
-                <p className="mt-1 text-muted text-sm">Recent articles across all topics</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {uncategorizedPosts.slice(0, 6).map((post) => (
+                    <LocalPostCard key={post.slug} item={post} />
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {uncategorizedPosts.slice(0, 6).map((post) => (
-                <LocalPostCard key={post.slug} item={post} />
-              ))}
-            </div>
+            )}
           </div>
         </section>
       )}

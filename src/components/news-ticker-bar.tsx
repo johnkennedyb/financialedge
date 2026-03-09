@@ -33,7 +33,7 @@ interface NewsTickerBarProps {
   speed?: number;
 }
 
-export default function NewsTickerBar({ speed = 30 }: NewsTickerBarProps) {
+export default function NewsTickerBar({ speed = 65 }: NewsTickerBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -41,7 +41,7 @@ export default function NewsTickerBar({ speed = 30 }: NewsTickerBarProps) {
   const displayContent = [...marketNews, ...marketNews, ...marketNews];
 
   return (
-    <div className="bg-slate-800 border-b border-border/50 overflow-hidden">
+    <div className="bg-slate-800 border-b border-border/50 overflow-hidden fixed top-[72px] left-0 right-0 z-[9997]">
       <div className="flex items-center">
         {/* News Label */}
         <div className="flex-shrink-0 bg-green-600 px-3 py-2 text-xs font-bold text-white z-10">

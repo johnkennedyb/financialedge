@@ -100,7 +100,7 @@ function StockItem({ stock }: { stock: typeof defaultStocks[0] }) {
   );
 }
 
-export default function StockTickerBar({ stocks = defaultStocks, speed = 40 }: StockTickerProps) {
+export default function StockTickerBar({ stocks = defaultStocks, speed = 160 }: StockTickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 

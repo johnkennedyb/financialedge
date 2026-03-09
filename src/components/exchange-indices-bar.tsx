@@ -34,7 +34,7 @@ interface ExchangeIndicesBarProps {
   speed?: number;
 }
 
-export default function ExchangeIndicesBar({ speed = 35 }: ExchangeIndicesBarProps) {
+export default function ExchangeIndicesBar({ speed = 70 }: ExchangeIndicesBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -42,7 +42,7 @@ export default function ExchangeIndicesBar({ speed = 35 }: ExchangeIndicesBarPro
   const displayContent = [...exchangeIndices, ...exchangeIndices, ...exchangeIndices];
 
   return (
-    <div className="bg-blue-900 border-b border-border/50 overflow-hidden">
+    <div className="bg-blue-900 border-b border-border/50 overflow-hidden fixed top-[36px] left-0 right-0 z-[9998]">
       <div className="flex items-center">
         {/* Exchange Label */}
         <div className="flex-shrink-0 bg-blue-600 px-3 py-2 text-xs font-bold text-white z-10">

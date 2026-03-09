@@ -44,7 +44,7 @@ interface SectorsTickerBarProps {
   speed?: number;
 }
 
-export default function SectorsTickerBar({ speed = 32 }: SectorsTickerBarProps) {
+export default function SectorsTickerBar({ speed = 75 }: SectorsTickerBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -52,7 +52,7 @@ export default function SectorsTickerBar({ speed = 32 }: SectorsTickerBarProps) 
   const displayContent = [...featuredSectors, ...featuredSectors, ...featuredSectors];
 
   return (
-    <div className="bg-slate-700 border-b border-border/50 overflow-hidden">
+    <div className="bg-slate-700 border-b border-border/50 overflow-hidden fixed top-[108px] left-0 right-0 z-[9996]">
       <div className="flex items-center">
         {/* Sectors Label */}
         <div className="flex-shrink-0 bg-amber-600 px-3 py-2 text-xs font-bold text-white z-10">
