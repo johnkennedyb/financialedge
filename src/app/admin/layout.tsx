@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/pages", label: "Pages", icon: "📄" },
   { href: "/admin/categories", label: "Categories", icon: "🏷️" },
   { href: "/admin/media", label: "Media", icon: "🖼️" },
+  { href: "/admin/adverts", label: "Adverts", icon: "📢" },
   { href: "/admin/analytics", label: "Analytics", icon: "📈" },
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ];
@@ -82,8 +83,8 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pathname === item.href
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted hover:bg-secondary hover:text-foreground"
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted hover:bg-secondary hover:text-foreground"
                   }`}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -108,8 +109,8 @@ export default function AdminLayout({
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${pathname === item.href
-                        ? "bg-accent text-accent-foreground"
-                        : "text-muted hover:bg-secondary hover:text-foreground"
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted hover:bg-secondary hover:text-foreground"
                       }`}
                   >
                     <span className="text-lg">{item.icon}</span>

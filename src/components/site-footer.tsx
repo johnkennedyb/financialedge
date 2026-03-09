@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import AdvertBanner from "./advert-banner";
 
 function FacebookIcon({ className }: { className?: string }) {
     return (
@@ -44,6 +45,9 @@ export default function SiteFooter() {
     return (
         <footer className="mt-20 border-t border-border bg-secondary/30 py-16">
             <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6">
+                {/* Footer Advert */}
+                <AdvertBanner position="footer" className="max-w-md mx-auto" />
+
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
                     <div className="md:col-span-5 flex flex-col gap-6">
                         <div className="flex items-center gap-2.5">

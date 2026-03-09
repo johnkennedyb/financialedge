@@ -4,6 +4,7 @@ import "./globals.css";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
+import StockTickerBar from "@/components/stock-ticker-bar";
 
 // function ThemeScript() {
 //   const script = `(() => {
@@ -54,6 +55,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased`}
       >
+        <StockTickerBar />
         <SiteHeader
           items={[
             { label: "Home", href: "/" },

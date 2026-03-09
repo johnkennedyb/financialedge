@@ -3,7 +3,8 @@ import Image from "next/image";
 
 import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
-import { hasImportedContent, listLatestPosts, listSections } from "@/lib/db-content";
+import AdvertBanner from "@/components/advert-banner";
+import { hasImportedContent, listLatestPosts, listSections, getPostsBySection } from "@/lib/db-content";
 
 // Force dynamic rendering to always show fresh posts
 export const dynamic = 'force-dynamic';
@@ -13,11 +14,30 @@ export default async function HomePage() {
   const posts = imported ? await listLatestPosts(12) : [];
   const sections = imported ? await listSections(12) : [];
 
+  // Group posts by their primary category/section
+  const postsByCategory: Record<string, typeof posts> = {};
+  const uncategorizedPosts: typeof posts = [];
+
+  posts.forEach((post) => {
+    const category = post.section || post.sectionSlug;
+    if (category) {
+      if (!postsByCategory[category]) {
+        postsByCategory[category] = [];
+      }
+      postsByCategory[category].push(post);
+    } else {
+      uncategorizedPosts.push(post);
+    }
+  });
+
+  // Get category display names
+  const categoryDisplayNames: Record<string, string> = {};
+  sections.forEach((s) => {
+    categoryDisplayNames[s.slug] = s.section;
+  });
+
   // Debug: log posts to console (visible in Vercel logs)
-  console.log(`[HomePage] Fetched ${posts.length} posts`);
-  if (posts.length > 0) {
-    console.log(`[HomePage] First post: ${posts[0].title} (${posts[0].publishedAt})`);
-  }
+  console.log(`[HomePage] Fetched ${posts.length} posts across ${Object.keys(postsByCategory).length} categories`);
 
   return (
     <div className="flex flex-col gap-20 pb-20">
@@ -35,12 +55,12 @@ export default async function HomePage() {
           </div>
 
           <h1 className="mt-8 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
-            Financial insights, <br />
-            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic">redefined.</span>
+            Financial edge, <br />
+            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic">sustaining stakeholders relations</span>
           </h1>
 
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
-            Nigeria's most reliable financial market analysis for the savvy investor. Fast, modern, and built for global intelligence.
+            Nigeria&apos;s most reliable financial market analysis for the savvy investor. Fast, modern, and built for global intelligence.
           </p>
 
           <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fe-fade-up" style={{ animationDelay: '200ms' }}>
@@ -99,7 +119,7 @@ export default async function HomePage() {
                       </Link>
                     ))}
                   </div>
-                  <Link href="/category/finance" className="mt-6 text-sm font-bold text-accent">Explore sectors →</Link>
+                  <Link href="/category" className="mt-6 text-sm font-bold text-accent">Explore sectors →</Link>
                 </div>
 
                 <div className="bento-item bg-secondary/50 p-8 flex-1">
@@ -108,16 +128,80 @@ export default async function HomePage() {
                     Designed for high-impact presentations. Fast, reliable, and visually stunning.
                   </p>
                 </div>
-              </div>
 
-              {/* Remaining Posts */}
-              <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                {(posts as any[]).slice(1, 10).map((p) => <LocalPostCard key={p.slug} item={p} />)}
+                {/* Homepage Sidebar Advert */}
+                <AdvertBanner position="homepage_sidebar" />
               </div>
             </div>
           )}
         </div>
       </section>
+
+      {/* Category Sections - Posts grouped by category */}
+      {imported && Object.keys(postsByCategory).length > 0 && (
+        <section className="mx-auto w-full max-w-7xl px-6">
+          <div className="flex flex-col gap-16">
+            {Object.entries(postsByCategory).map(([categorySlug, categoryPosts]) => {
+              const displayName = categoryDisplayNames[categorySlug] || categorySlug;
+              const visiblePosts = categoryPosts.slice(0, 6);
+              const hasMore = categoryPosts.length > 6;
+
+              return (
+                <div key={categorySlug} className="flex flex-col gap-6">
+                  <div className="flex items-end justify-between border-b border-border pb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold tracking-tight capitalize">{displayName}</h2>
+                      <p className="mt-1 text-muted text-sm">{categoryPosts.length} {categoryPosts.length === 1 ? 'article' : 'articles'} in this category</p>
+                    </div>
+                    <Link
+                      href={`/category/${categorySlug}`}
+                      className="text-sm font-semibold text-accent hover:underline decoration-2 underline-offset-4 transition-all"
+                    >
+                      View all {displayName} →
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {visiblePosts.map((post) => (
+                      <LocalPostCard key={post.slug} item={post} />
+                    ))}
+                  </div>
+
+                  {hasMore && (
+                    <div className="text-center">
+                      <Link
+                        href={`/category/${categorySlug}`}
+                        className="inline-flex items-center gap-2 text-sm text-muted hover:text-accent transition-colors"
+                      >
+                        <span>+ {categoryPosts.length - 6} more articles</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {uncategorizedPosts.length > 0 && (
+              <div className="flex flex-col gap-6">
+                <div className="flex items-end justify-between border-b border-border pb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold tracking-tight">Latest Updates</h2>
+                    <p className="mt-1 text-muted text-sm">Recent articles across all topics</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {uncategorizedPosts.slice(0, 6).map((post) => (
+                    <LocalPostCard key={post.slug} item={post} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -127,6 +211,7 @@ function FeaturedBentoItem({ item }: { item: any }) {
   const description = item.description;
   const image = item.featuredImage;
   const slug = String(item.slug || '');
+  const section = item.section || item.sectionSlug;
 
   const fallbackImages = [
     "https://images.pexels.com/photos/3184296/pexels-photo-3184296.jpeg?auto=compress&cs=tinysrgb&w=1600",
@@ -149,9 +234,11 @@ function FeaturedBentoItem({ item }: { item: any }) {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
       <div className="relative z-10">
-        <span className="inline-block px-3 py-1 rounded-full bg-accent text-[10px] font-bold text-white uppercase tracking-widest mb-4">
-          Featured Intelligence
-        </span>
+        {section && (
+          <span className="inline-block px-3 py-1 rounded-full bg-accent text-[10px] font-bold text-white uppercase tracking-widest mb-4">
+            {section}
+          </span>
+        )}
         <h3 className="text-3xl font-bold text-white tracking-tight leading-tight group-hover:text-accent transition-colors">
           {title}
         </h3>

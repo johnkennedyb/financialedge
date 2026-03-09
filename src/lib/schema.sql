@@ -91,6 +91,29 @@ CREATE INDEX IF NOT EXISTS idx_pages_status ON pages(status);
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
 CREATE INDEX IF NOT EXISTS idx_media_url ON media(url);
 
+-- Adverts table
+CREATE TABLE IF NOT EXISTS adverts (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(500) NOT NULL,
+  description TEXT,
+  image_url VARCHAR(500),
+  link_url VARCHAR(500) NOT NULL,
+  position VARCHAR(50) DEFAULT 'sidebar', -- homepage_hero, homepage_sidebar, footer, sidebar, inline
+  status VARCHAR(20) DEFAULT 'active', -- active, inactive
+  priority INTEGER DEFAULT 0,
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
+  click_count INTEGER DEFAULT 0,
+  impression_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for adverts
+CREATE INDEX IF NOT EXISTS idx_adverts_position ON adverts(position);
+CREATE INDEX IF NOT EXISTS idx_adverts_status ON adverts(status);
+CREATE INDEX IF NOT EXISTS idx_adverts_priority ON adverts(priority DESC);
+
 -- Insert default SEO settings
 INSERT INTO seo_settings (id, site_title, site_description) 
 VALUES (1, 'FinancialEDGE', 'Nigeria\'s definitive market intelligence platform')
