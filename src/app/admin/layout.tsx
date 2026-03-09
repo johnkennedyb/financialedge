@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/pages", label: "Pages", icon: "📄" },
   { href: "/admin/categories", label: "Categories", icon: "🏷️" },
   { href: "/admin/media", label: "Media", icon: "🖼️" },
+  { href: "/admin/videos", label: "Videos", icon: "🎬" },
   { href: "/admin/adverts", label: "Adverts", icon: "📢" },
   { href: "/admin/analytics", label: "Analytics", icon: "📈" },
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },

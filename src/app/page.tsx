@@ -5,7 +5,9 @@ import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
 import AdvertBanner from "@/components/advert-banner";
 import StorySlider from "@/components/story-slider";
+import { VideoGrid } from "@/components/youtube-video";
 import { hasImportedContent, listLatestPosts, listSections, getPostsBySection } from "@/lib/db-content";
+import { getActiveVideosByPosition } from "@/lib/videos";
 
 // Force dynamic rendering to always show fresh posts
 export const dynamic = 'force-dynamic';
@@ -14,6 +16,7 @@ export default async function HomePage() {
   const imported = hasImportedContent();
   const posts = imported ? await listLatestPosts(12) : [];
   const sections = imported ? await listSections(12) : [];
+  const videos = await getActiveVideosByPosition("homepage");
 
   // Group posts by their primary category/section
   const postsByCategory: Record<string, typeof posts> = {};
@@ -126,6 +129,21 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {/* Featured Videos Section */}
+      {videos.length > 0 && (
+        <section className="mx-auto w-full max-w-7xl px-6 mt-12">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight">Featured Videos</h2>
+                <p className="mt-1 text-muted">Latest insights and interviews</p>
+              </div>
+            </div>
+            <VideoGrid videos={videos} />
+          </div>
+        </section>
+      )}
 
       {/* Category Sections - Posts grouped by category */}
       {imported && Object.keys(postsByCategory).length > 0 && (

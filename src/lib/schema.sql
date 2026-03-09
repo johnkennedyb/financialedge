@@ -112,6 +112,26 @@ CREATE TABLE IF NOT EXISTS adverts (
 CREATE INDEX IF NOT EXISTS idx_adverts_position ON adverts(position);
 CREATE INDEX IF NOT EXISTS idx_adverts_status ON adverts(status);
 
+-- Videos table for YouTube videos
+CREATE TABLE IF NOT EXISTS videos (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(500) NOT NULL,
+  description TEXT,
+  youtube_url VARCHAR(500) NOT NULL,
+  youtube_id VARCHAR(20) NOT NULL,
+  thumbnail_url VARCHAR(500),
+  status VARCHAR(20) DEFAULT 'active',
+  position VARCHAR(50) DEFAULT 'homepage',
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for videos
+CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status);
+CREATE INDEX IF NOT EXISTS idx_videos_position ON videos(position);
+CREATE INDEX IF NOT EXISTS idx_videos_sort_order ON videos(sort_order);
+
 -- Insert default SEO settings
 INSERT INTO seo_settings (id, site_title, site_description) 
 VALUES (1, 'FinancialEDGE', 'Nigeria\'s definitive market intelligence platform')
