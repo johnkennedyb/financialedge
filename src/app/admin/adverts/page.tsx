@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import MediaPicker from "@/components/media-picker";
 
 interface Advert {
   id: string;
@@ -44,6 +45,7 @@ export default function AdvertsPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
 
   const loadAdverts = async () => {
     try {
@@ -214,44 +216,43 @@ export default function AdvertsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Image</label>
-                <div className="flex gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const formData = new FormData();
-                        formData.append('file', file);
-                        try {
-                          const res = await fetch('/api/admin/upload/cloudinary', {
-                            method: 'POST',
-                            body: formData,
-                          });
-                          if (res.ok) {
-                            const data = await res.json();
-                            console.log('Upload response:', data);
-                            setFormData(prev => ({ ...prev, imageUrl: data.url }));
-                          } else {
-                            console.error('Upload failed:', res.status);
-                            const errorData = await res.json().catch(() => ({}));
-                            console.error('Upload error:', errorData);
-                          }
-                        } catch (err) {
-                          console.error('Upload failed:', err);
-                        }
-                      }
-                    }}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2"
-                  />
+                <div className="space-y-2">
+                  {formData.imageUrl ? (
+                    <div className="relative w-full max-w-xs">
+                      <img
+                        src={formData.imageUrl}
+                        alt="Advert"
+                        className="w-full h-32 object-cover rounded border border-border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, imageUrl: "" })}
+                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                        title="Remove image"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsMediaPickerOpen(true)}
+                      className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm hover:bg-secondary flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Select from Media Library
+                    </button>
+                  )}
                 </div>
-                {formData.imageUrl && (
-                  <div className="mt-2">
-                    <p className="text-xs text-muted mb-1">Current Image:</p>
-                    <img src={formData.imageUrl} alt="Preview" className="w-32 h-20 object-cover rounded border border-border" />
-                    <p className="text-xs text-muted mt-1 truncate max-w-xs">{formData.imageUrl}</p>
-                  </div>
-                )}
+                <MediaPicker
+                  isOpen={isMediaPickerOpen}
+                  onClose={() => setIsMediaPickerOpen(false)}
+                  onSelect={(url) => setFormData({ ...formData, imageUrl: url })}
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Position *</label>
