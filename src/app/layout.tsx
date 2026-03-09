@@ -67,7 +67,7 @@ export default function RootLayout({
           ]}
         />
         <div className="bg-grid">
-          <div className="mx-auto w-full max-w-6xl px-4 py-10 md:py-12">{children}</div>
+          <div className="mx-auto w-full max-w-6xl px-4 py-6 md:py-8">{children}</div>
         </div>
         <SiteFooter />
       </body>

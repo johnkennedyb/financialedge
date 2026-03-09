@@ -218,7 +218,7 @@ export default function AdvertsPage() {
                         const formData = new FormData();
                         formData.append('file', file);
                         try {
-                          const res = await fetch('/api/admin/media', {
+                          const res = await fetch('/api/admin/upload', {
                             method: 'POST',
                             body: formData,
                           });
@@ -351,8 +351,8 @@ export default function AdvertsPage() {
                     <td className="px-4 py-4">
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${advert.status === "active"
-                            ? "bg-green-500/10 text-green-500"
-                            : "bg-gray-500/10 text-gray-500"
+                          ? "bg-green-500/10 text-green-500"
+                          : "bg-gray-500/10 text-gray-500"
                           }`}
                       >
                         {advert.status}
