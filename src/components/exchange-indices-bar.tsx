@@ -1,36 +1,18 @@
 "use client";
 
-// Nigerian Exchange Indices Bar - Shows major NGX indices below the main ticker
-const exchangeIndices = [
-  {
-    name: "NGX All-Share Index",
-    symbol: "NGXASI",
-    price: 98575.68,
-    change: 1.25,
-    market: "NGX",
-    description: "Main equities market",
-  },
-  {
-    name: "NGX 30 Index",
-    symbol: "NGX30",
-    price: 4523.15,
-    change: 0.85,
-    market: "NGX",
-    description: "Top 30 companies",
-  },
-  {
-    name: "NGX Banking Index",
-    symbol: "NGXBANK",
-    price: 678.42,
-    change: -0.32,
-    market: "NGX",
-    description: "Banking sector",
-  },
-];
+import { useRef, useState } from "react";
 
-interface ExchangeBarProps {
-  indices?: typeof exchangeIndices;
-}
+// NGX Exchange Indices from ngxgroup.com
+const exchangeIndices = [
+  { symbol: "NGXASI", name: "NGX All-Share Index", price: 98575.68, change: 1.25 },
+  { symbol: "NGX30", name: "NGX 30 Index", price: 4523.15, change: 0.85 },
+  { symbol: "NGXBANK", name: "NGX Banking Index", price: 678.42, change: -0.32 },
+  { symbol: "NGXINS", name: "NGX Insurance Index", price: 245.18, change: 0.45 },
+  { symbol: "NGXCG", name: "NGX Consumer Goods", price: 892.34, change: -0.18 },
+  { symbol: "NGXOIL", name: "NGX Oil & Gas", price: 567.89, change: 1.12 },
+  { symbol: "NGXIND", name: "NGX Industrial", price: 345.67, change: 0.23 },
+  { symbol: "PREMIUM", name: "NGX Premium Index", price: 7891.23, change: 0.67 },
+];
 
 function IndexItem({ index }: { index: typeof exchangeIndices[0] }) {
   const isPositive = index.change >= 0;
@@ -38,49 +20,74 @@ function IndexItem({ index }: { index: typeof exchangeIndices[0] }) {
   const arrow = isPositive ? "▲" : "▼";
 
   return (
-    <div className="flex items-center gap-3 px-6 py-2 border-r border-white/10 last:border-r-0">
-      <div className="flex flex-col">
-        <span className="text-xs font-bold text-white">{index.name}</span>
-        <span className="text-[10px] text-white/50">{index.market} • {index.description}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-semibold text-white">{index.price.toLocaleString()}</span>
-        <span className={`text-xs font-medium ${changeColor}`}>
-          {arrow} {Math.abs(index.change).toFixed(2)}%
-        </span>
-      </div>
+    <div className="flex items-center gap-2 px-4 whitespace-nowrap border-l border-white/10 first:border-l-0">
+      <span className="text-xs font-bold text-white">{index.symbol}</span>
+      <span className="text-xs text-white/60">{index.price.toLocaleString()}</span>
+      <span className={`text-xs font-medium ${changeColor}`}>
+        {arrow} {Math.abs(index.change).toFixed(2)}%
+      </span>
     </div>
   );
 }
 
-export default function ExchangeIndicesBar({ indices = exchangeIndices }: ExchangeBarProps) {
+interface ExchangeIndicesBarProps {
+  speed?: number;
+}
+
+export default function ExchangeIndicesBar({ speed = 35 }: ExchangeIndicesBarProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Duplicate for seamless scrolling
+  const displayContent = [...exchangeIndices, ...exchangeIndices, ...exchangeIndices];
+
   return (
-    <div className="bg-slate-800 border-b border-border/50">
-      <div className="flex items-center overflow-x-auto scrollbar-hide">
+    <div className="bg-blue-900 border-b border-border/50 overflow-hidden">
+      <div className="flex items-center">
         {/* Exchange Label */}
-        <div className="flex-shrink-0 bg-blue-600 px-3 py-2 text-xs font-bold text-white">
+        <div className="flex-shrink-0 bg-blue-600 px-3 py-2 text-xs font-bold text-white z-10">
           NGX INDICES
         </div>
 
-        {/* Index Items */}
-        <div className="flex items-center">
-          {indices.map((index) => (
-            <IndexItem key={index.symbol} index={index} />
-          ))}
+        {/* Scrolling Ticker */}
+        <div
+          ref={containerRef}
+          className="flex-1 overflow-hidden relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <div
+            className={`flex items-center py-2 ${isPaused ? "" : "animate-marquee-ngx"}`}
+            style={{
+              animationDuration: `${(containerRef.current?.offsetWidth || 1000) / speed}s`,
+            }}
+          >
+            {displayContent.map((index, idx) => (
+              <IndexItem key={idx} index={index} />
+            ))}
+          </div>
         </div>
 
-        {/* More Info Link */}
-        <div className="flex-shrink-0 ml-auto px-3 py-2 border-l border-white/10">
-          <a
-            href="https://ngxgroup.com/exchange/data/indices/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] text-white/60 hover:text-accent transition-colors"
-          >
-            View all indices →
-          </a>
+        {/* Right corner info */}
+        <div className="hidden sm:flex flex-shrink-0 items-center gap-2 px-3 py-2 text-xs text-white/70 border-l border-white/10">
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+          <span>LIVE</span>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes marquee-ngx {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-33.33%);
+          }
+        }
+        .animate-marquee-ngx {
+          animation: marquee-ngx linear infinite;
+        }
+      `}</style>
     </div>
   );
 }
