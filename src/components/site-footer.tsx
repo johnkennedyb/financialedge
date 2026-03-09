@@ -50,16 +50,6 @@ export default function SiteFooter() {
 
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
                     <div className="md:col-span-5 flex flex-col gap-6">
-                        <div className="flex items-center gap-2.5">
-                            <span className="relative h-20 w-[300px] overflow-hidden sm:h-24 sm:w-[360px]">
-                                <Image
-                                    src="/logo.png"
-                                    alt="Financial EDGE"
-                                    fill
-                                    className="object-contain object-left"
-                                />
-                            </span>
-                        </div>
                         <p className="max-w-sm text-lg leading-relaxed text-muted">
                             Nigeria's definitive market intelligence platform. Bridging the gap between raw data and savvy investment decisions.
                         </p>
