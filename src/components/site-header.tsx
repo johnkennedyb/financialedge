@@ -122,9 +122,9 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
     return (
         <>
             <header
-                className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
+                className={`fixed top-[144px] left-0 right-0 z-[9995] transition-all duration-300 ${scrolled
                     ? "border-b border-border bg-background/80 backdrop-blur-md py-3"
-                    : "bg-transparent py-5"
+                    : "bg-background py-5"
                     }`}
             >
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6">
