@@ -48,8 +48,8 @@ export default async function HomePage() {
 
         <div className="flex flex-col items-center text-center pt-1">
           <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl">
-            Financial edge, <br />
-            <span className="text-accent font-bold text-lg sm:text-xl lg:text-2xl">sustaining stakeholders relations</span>
+            <span className="text-blue-600">Financial edge,</span> <br />
+            <span className="text-red-600 font-bold text-lg sm:text-xl lg:text-2xl">sustaining stakeholders relations</span>
           </h1>
 
           {/* Story Slider */}
