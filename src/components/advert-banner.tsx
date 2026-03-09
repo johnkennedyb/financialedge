@@ -10,6 +10,11 @@ interface AdvertBannerProps {
 export default async function AdvertBanner({ position, className = "" }: AdvertBannerProps) {
   const adverts = await getActiveAdvertsByPosition(position);
 
+  console.log('DEBUG AdvertBanner position:', position, 'adverts count:', adverts.length);
+  if (adverts.length > 0) {
+    console.log('DEBUG first advert:', adverts[0]);
+  }
+
   if (adverts.length === 0) return null;
 
   // Get the highest priority advert
@@ -18,16 +23,17 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
   const advertContent = (
     <div className="relative overflow-hidden rounded-lg border border-border hover:border-accent transition-all hover:shadow-md">
       {advert.imageUrl ? (
-        <div className="relative aspect-[16/9] w-full">
+        <div className="relative aspect-[21/9] w-full max-h-[200px]">
           <Image
             src={advert.imageUrl}
             alt={advert.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          {console.log('DEBUG Image src:', advert.imageUrl)}
         </div>
       ) : (
-        <div className="p-10 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[400px] flex flex-col justify-center">
+        <div className="p-6 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[150px] flex flex-col justify-center">
           <h3 className="text-2xl font-semibold text-foreground group-hover:text-accent transition-colors">
             {advert.title}
           </h3>

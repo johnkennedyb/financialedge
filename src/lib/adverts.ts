@@ -171,6 +171,7 @@ export async function getAdvertById(id: string): Promise<Advert | null> {
 
 // Create new advert
 export async function createAdvert(input: AdvertInput): Promise<Advert> {
+  console.log('DEBUG createAdvert input:', input);
   const db = getDb();
   
   const result = await db`
@@ -194,7 +195,8 @@ export async function createAdvert(input: AdvertInput): Promise<Advert> {
   `;
 
   const row = result[0];
-  return {
+  console.log('DEBUG createAdvert raw row:', row);
+  const mapped = {
     id: String(row.id),
     title: String(row.title),
     description: row.description,
@@ -209,6 +211,8 @@ export async function createAdvert(input: AdvertInput): Promise<Advert> {
     clickCount: Number(row.clickCount || row.clickcount || 0),
     impressionCount: Number(row.impressionCount || row.impressioncount || 0),
   };
+  console.log('DEBUG createAdvert mapped:', mapped);
+  return mapped;
 }
 
 // Update advert

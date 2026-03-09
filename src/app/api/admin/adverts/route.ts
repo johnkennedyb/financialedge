@@ -19,6 +19,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('DEBUG API POST body:', body);
     
     // Validate required fields
     if (!body.title || !body.position) {
@@ -38,6 +39,8 @@ export async function POST(request: NextRequest) {
       startDate: body.startDate,
       endDate: body.endDate,
     });
+
+    console.log('DEBUG API POST returning advert:', advert);
 
     return NextResponse.json({ advert }, { status: 201 });
   } catch (error) {

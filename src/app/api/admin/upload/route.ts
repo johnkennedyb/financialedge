@@ -3,6 +3,15 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { getDb } from "@/lib/db";
+import { v2 as cloudinary } from "cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 export const runtime = "nodejs";
 
@@ -78,17 +87,51 @@ export async function POST(request: NextRequest) {
     writeJson(mediaMetaPath(), meta);
 
     // Also save to database so it appears in media library
+    let dbSaved = false;
     try {
       const db = getDb();
-      await db`INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
+      const result = await db`INSERT INTO media (filename, original_name, mime_type, size, url, alt_text, caption)
         VALUES (${filename}, ${file.name}, ${file.type || "application/octet-stream"}, ${bytes.length}, ${url}, ${""}, ${""})
-        ON CONFLICT (url) DO NOTHING`;
+        ON CONFLICT (url) DO NOTHING
+        RETURNING id`;
+      dbSaved = result.length > 0;
+      if (dbSaved) {
+        console.log('[Upload] Saved to media database, id:', result[0].id);
+      } else {
+        console.log('[Upload] Media already exists in database (URL conflict):', url);
+      }
     } catch (dbError) {
-      console.error("Failed to save to database:", dbError);
+      console.error('[Upload] Failed to save to database:', dbError);
       // Continue even if DB fails - file is still saved
     }
 
-    return NextResponse.json(meta[id], { status: 201 });
+    // Upload to Cloudinary
+    let cloudinaryUrl = null;
+    try {
+      const publicId = `adverts/${filename.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50)}`;
+      const uploadResult = await cloudinary.uploader.upload(diskPath, {
+        public_id: publicId,
+        folder: 'financialedge/adverts',
+        resource_type: 'auto',
+      });
+      cloudinaryUrl = uploadResult.secure_url;
+      
+      // Update cloudinary-mapping.json
+      const mappingPath = path.join(contentDir(), 'cloudinary-mapping.json');
+      const mapping = readJson<Record<string, string>>(mappingPath, {});
+      mapping[url] = cloudinaryUrl;
+      writeJson(mappingPath, mapping);
+      
+      console.log('Uploaded to Cloudinary:', cloudinaryUrl);
+    } catch (cloudinaryError) {
+      console.error('Failed to upload to Cloudinary:', cloudinaryError);
+      // Continue even if Cloudinary fails - local file is still saved
+    }
+
+    return NextResponse.json({
+      ...meta[id],
+      cloudinaryUrl,
+    }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Upload failed" },
