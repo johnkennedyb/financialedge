@@ -59,8 +59,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Homepage Hero Advert */}
-      <section className="mx-auto w-full max-w-7xl px-6 mt-6">
+      {/* Homepage Hero Advert - Full Width */}
+      <section className="w-full mt-6 px-6">
         <AdvertBanner position="homepage_hero" />
       </section>
 

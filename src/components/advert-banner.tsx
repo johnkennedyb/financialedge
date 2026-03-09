@@ -20,10 +20,17 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
   // Get the highest priority advert
   const advert = adverts[0];
 
+  // DEBUG: Show what's in the advert
+  console.log('Advert data:', {
+    title: advert.title,
+    imageUrl: advert.imageUrl,
+    hasImage: !!advert.imageUrl
+  });
+
   const advertContent = (
-    <div className="relative overflow-hidden rounded-lg border border-border hover:border-accent transition-all hover:shadow-md">
+    <div className="relative overflow-hidden border border-border hover:border-accent transition-all hover:shadow-md w-full">
       {advert.imageUrl ? (
-        <div className="relative aspect-[32/9] w-full max-h-[280px]">
+        <div className="relative aspect-[48/9] w-full max-h-[320px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={advert.imageUrl}
@@ -32,7 +39,7 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
           />
         </div>
       ) : (
-        <div className="p-8 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[200px] flex flex-col justify-center">
+        <div className="p-8 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[200px] flex flex-col justify-center w-full">
           <h3 className="text-2xl font-semibold text-foreground group-hover:text-accent transition-colors">
             {advert.title}
           </h3>

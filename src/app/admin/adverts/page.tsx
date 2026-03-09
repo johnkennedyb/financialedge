@@ -224,7 +224,7 @@ export default function AdvertsPage() {
                         const formData = new FormData();
                         formData.append('file', file);
                         try {
-                          const res = await fetch('/api/admin/upload', {
+                          const res = await fetch('/api/admin/upload/cloudinary', {
                             method: 'POST',
                             body: formData,
                           });
