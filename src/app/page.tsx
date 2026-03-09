@@ -4,6 +4,7 @@ import Image from "next/image";
 import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
 import AdvertBanner from "@/components/advert-banner";
+import StorySlider from "@/components/story-slider";
 import { hasImportedContent, listLatestPosts, listSections, getPostsBySection } from "@/lib/db-content";
 
 // Force dynamic rendering to always show fresh posts
@@ -40,28 +41,20 @@ export default async function HomePage() {
   console.log(`[HomePage] Fetched ${posts.length} posts across ${Object.keys(postsByCategory).length} categories`);
 
   return (
-    <div className="flex flex-col gap-12 pb-12">
-      {/* Hero Section */}
-      <section className="relative">
+    <div className="flex flex-col pb-12">
+      {/* Hero Section - No gap with menu */}
+      <section className="relative -mt-1">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--gold-glow)_0%,transparent_100%)] opacity-50" />
 
-        <div className="flex flex-col items-center text-center">
-          <h1 className="mt-4 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
+        <div className="flex flex-col items-center text-center pt-1">
+          <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl">
             Financial edge, <br />
-            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-xl sm:text-2xl lg:text-3xl">sustaining stakeholders relations</span>
+            <span className="text-accent font-bold text-lg sm:text-xl lg:text-2xl">sustaining stakeholders relations</span>
           </h1>
 
-          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
-            Nigeria&apos;s most reliable financial market analysis for the savvy investor. Fast, modern, and built for global intelligence.
-          </p>
-
-          <div className="mt-6 flex flex-wrap justify-center gap-4 animate-fe-fade-up" style={{ animationDelay: '200ms' }}>
-            <Link href="/category/finance" className="btn-modern bg-accent shadow-xl shadow-accent/20">
-              Browse the Archive
-            </Link>
-            <Link href="/about" className="btn-modern bg-secondary border border-border !text-foreground hover:bg-border/50">
-              Our Methodology
-            </Link>
+          {/* Story Slider */}
+          <div className="w-full mt-4">
+            <StorySlider stories={posts.slice(0, 5).map(p => ({ ...p, title: p.title || '', description: p.description || '', featuredImage: p.featuredImage || undefined, section: p.section || undefined }))} />
           </div>
         </div>
       </section>
