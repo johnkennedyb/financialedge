@@ -30,7 +30,6 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          {console.log('DEBUG Image src:', advert.imageUrl)}
         </div>
       ) : (
         <div className="p-6 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[150px] flex flex-col justify-center">
