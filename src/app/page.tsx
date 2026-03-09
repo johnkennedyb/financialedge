@@ -46,7 +46,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--gold-glow)_0%,transparent_100%)] opacity-50" />
 
         <div className="flex flex-col items-center text-center">
-          <h1 className="mt-2 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
+          <h1 className="mt-2 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl lg:leading-[1.1] animate-fe-fade-up">
             Financial edge, <br />
             <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-4xl sm:text-5xl lg:text-6xl">sustaining stakeholders relations</span>
           </h1>

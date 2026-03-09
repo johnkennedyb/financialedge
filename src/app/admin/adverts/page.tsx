@@ -43,6 +43,8 @@ export default function AdvertsPage() {
     endDate: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const loadAdverts = async () => {
     try {
       setLoading(true);
@@ -64,6 +66,8 @@ export default function AdvertsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const url = editingAdvert
         ? `/api/admin/adverts?id=${editingAdvert.id}`
@@ -88,6 +92,8 @@ export default function AdvertsPage() {
       loadAdverts();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save advert");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -288,13 +294,18 @@ export default function AdvertsPage() {
             </div>
 
             <div className="flex gap-2 pt-4">
-              <button type="submit" className="btn-modern">
-                {editingAdvert ? "Update Advert" : "Create Advert"}
+              <button
+                type="submit"
+                className="btn-modern"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Saving..." : editingAdvert ? "Update Advert" : "Create Advert"}
               </button>
               <button
                 type="button"
                 onClick={() => { setShowForm(false); setEditingAdvert(null); }}
                 className="rounded-lg border border-border bg-secondary px-4 py-2 hover:bg-secondary/80"
+                disabled={isSubmitting}
               >
                 Cancel
               </button>

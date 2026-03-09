@@ -81,7 +81,8 @@ export async function getAllAdverts(): Promise<Advert[]> {
 export async function getActiveAdvertsByPosition(position: Advert["position"]): Promise<Advert[]> {
   const db = getDb();
   
-  const now = new Date().toISOString();
+  // Use current date in YYYY-MM-DD format for date-only comparison
+  const today = new Date().toISOString().split('T')[0];
   
   const result = await db`
     SELECT 
@@ -101,8 +102,8 @@ export async function getActiveAdvertsByPosition(position: Advert["position"]): 
     FROM adverts
     WHERE position = ${position}
       AND status = 'active'
-      AND (start_date IS NULL OR start_date <= ${now})
-      AND (end_date IS NULL OR end_date >= ${now})
+      AND (start_date IS NULL OR DATE(start_date) <= ${today})
+      AND (end_date IS NULL OR DATE(end_date) >= ${today})
     ORDER BY created_at DESC
     LIMIT 5
   `;
@@ -112,10 +113,9 @@ export async function getActiveAdvertsByPosition(position: Advert["position"]): 
     title: String(row.title),
     description: row.description,
     imageUrl: row.imageurl,
-    linkUrl: String(row.linkurl),
+    linkUrl: row.linkurl,
     position: row.position,
     status: row.status,
-    priority: Number(row.priority),
     startDate: row.startdate,
     endDate: row.enddate,
     createdAt: String(row.createdat),
