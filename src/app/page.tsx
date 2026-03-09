@@ -59,8 +59,13 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Homepage Hero Advert */}
+      <section className="mx-auto w-full max-w-7xl px-6 mt-6">
+        <AdvertBanner position="homepage_hero" />
+      </section>
+
       {/* Featured Bento Section */}
-      <section className="mx-auto w-full max-w-7xl px-6">
+      <section className="mx-auto w-full max-w-7xl px-6 mt-8">
         <div className="flex flex-col gap-8">
           <div className="flex items-end justify-between">
             <div>

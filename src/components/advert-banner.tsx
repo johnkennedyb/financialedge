@@ -23,16 +23,16 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
   const advertContent = (
     <div className="relative overflow-hidden rounded-lg border border-border hover:border-accent transition-all hover:shadow-md">
       {advert.imageUrl ? (
-        <div className="relative aspect-[21/9] w-full max-h-[200px]">
-          <Image
+        <div className="relative aspect-[32/9] w-full max-h-[280px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={advert.imageUrl}
             alt={advert.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
       ) : (
-        <div className="p-6 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[150px] flex flex-col justify-center">
+        <div className="p-8 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[200px] flex flex-col justify-center">
           <h3 className="text-2xl font-semibold text-foreground group-hover:text-accent transition-colors">
             {advert.title}
           </h3>
