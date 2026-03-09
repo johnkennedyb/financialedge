@@ -42,28 +42,20 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-20 pb-20">
       {/* Hero Section */}
-      <section className="relative pt-10">
+      <section className="relative pt-4">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--gold-glow)_0%,transparent_100%)] opacity-50" />
 
         <div className="flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-xs font-semibold text-accent animate-fe-fade-in">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
-            </span>
-            Live Intelligence
-          </div>
-
-          <h1 className="mt-8 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
+          <h1 className="mt-4 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
             Financial edge, <br />
-            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic">sustaining stakeholders relations</span>
+            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-3xl sm:text-4xl lg:text-5xl">sustaining stakeholders relations</span>
           </h1>
 
-          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
             Nigeria&apos;s most reliable financial market analysis for the savvy investor. Fast, modern, and built for global intelligence.
           </p>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fe-fade-up" style={{ animationDelay: '200ms' }}>
+          <div className="mt-6 flex flex-wrap justify-center gap-4 animate-fe-fade-up" style={{ animationDelay: '200ms' }}>
             <Link href="/category/finance" className="btn-modern bg-accent shadow-xl shadow-accent/20">
               Browse the Archive
             </Link>
