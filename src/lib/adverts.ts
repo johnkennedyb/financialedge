@@ -14,10 +14,9 @@ export type Advert = {
   title: string;
   description: string | null;
   imageUrl: string | null;
-  linkUrl: string;
+  linkUrl: string | null;
   position: "homepage_hero" | "homepage_sidebar" | "footer" | "sidebar" | "inline";
   status: "active" | "inactive";
-  priority: number;
   startDate: string | null;
   endDate: string | null;
   createdAt: string;
@@ -30,10 +29,9 @@ export type AdvertInput = {
   title: string;
   description?: string | null;
   imageUrl?: string | null;
-  linkUrl: string;
+  linkUrl?: string | null;
   position: Advert["position"];
   status?: "active" | "inactive";
-  priority?: number;
   startDate?: string | null;
   endDate?: string | null;
 };
@@ -51,7 +49,6 @@ export async function getAllAdverts(): Promise<Advert[]> {
       link_url as linkUrl,
       position,
       status,
-      priority,
       start_date as startDate,
       end_date as endDate,
       created_at as createdAt,
@@ -59,7 +56,7 @@ export async function getAllAdverts(): Promise<Advert[]> {
       click_count as clickCount,
       impression_count as impressionCount
     FROM adverts
-    ORDER BY priority DESC, created_at DESC
+    ORDER BY created_at DESC
   `;
 
   return result.map((row: any) => ({
@@ -95,7 +92,6 @@ export async function getActiveAdvertsByPosition(position: Advert["position"]): 
       link_url as linkUrl,
       position,
       status,
-      priority,
       start_date as startDate,
       end_date as endDate,
       created_at as createdAt,
@@ -107,7 +103,7 @@ export async function getActiveAdvertsByPosition(position: Advert["position"]): 
       AND status = 'active'
       AND (start_date IS NULL OR start_date <= ${now})
       AND (end_date IS NULL OR end_date >= ${now})
-    ORDER BY priority DESC, created_at DESC
+    ORDER BY created_at DESC
     LIMIT 5
   `;
 
@@ -142,7 +138,6 @@ export async function getAdvertById(id: string): Promise<Advert | null> {
       link_url as linkUrl,
       position,
       status,
-      priority,
       start_date as startDate,
       end_date as endDate,
       created_at as createdAt,
@@ -162,10 +157,9 @@ export async function getAdvertById(id: string): Promise<Advert | null> {
     title: String(row.title),
     description: row.description,
     imageUrl: row.imageurl,
-    linkUrl: String(row.linkurl),
+    linkUrl: row.linkurl,
     position: row.position,
     status: row.status,
-    priority: Number(row.priority),
     startDate: row.startdate,
     endDate: row.enddate,
     createdAt: String(row.createdat),
@@ -182,20 +176,19 @@ export async function createAdvert(input: AdvertInput): Promise<Advert> {
   const result = await db`
     INSERT INTO adverts (
       title, description, image_url, link_url, position, 
-      status, priority, start_date, end_date
+      status, start_date, end_date
     ) VALUES (
       ${input.title}, 
       ${input.description || null}, 
       ${input.imageUrl || null}, 
-      ${input.linkUrl}, 
+      ${input.linkUrl || null}, 
       ${input.position},
       ${input.status || 'active'}, 
-      ${input.priority || 0}, 
       ${input.startDate || null}, 
       ${input.endDate || null}
     )
     RETURNING id, title, description, image_url as imageUrl, link_url as linkUrl, 
-              position, status, priority, start_date as startDate, end_date as endDate,
+              position, status, start_date as startDate, end_date as endDate,
               created_at as createdAt, updated_at as updatedAt, 
               click_count as clickCount, impression_count as impressionCount
   `;
@@ -206,10 +199,9 @@ export async function createAdvert(input: AdvertInput): Promise<Advert> {
     title: String(row.title),
     description: row.description,
     imageUrl: row.imageurl,
-    linkUrl: String(row.linkurl),
+    linkUrl: row.linkurl,
     position: row.position,
     status: row.status,
-    priority: Number(row.priority),
     startDate: row.startdate,
     endDate: row.enddate,
     createdAt: String(row.createdat),
@@ -232,13 +224,12 @@ export async function updateAdvert(id: string, input: Partial<AdvertInput>): Pro
       link_url = COALESCE(${input.linkUrl}, link_url),
       position = COALESCE(${input.position}, position),
       status = COALESCE(${input.status}, status),
-      priority = COALESCE(${input.priority}, priority),
       start_date = COALESCE(${input.startDate}, start_date),
       end_date = COALESCE(${input.endDate}, end_date),
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING id, title, description, image_url as imageUrl, link_url as linkUrl, 
-              position, status, priority, start_date as startDate, end_date as endDate,
+              position, status, start_date as startDate, end_date as endDate,
               created_at as createdAt, updated_at as updatedAt,
               click_count as clickCount, impression_count as impressionCount
   `;
@@ -251,10 +242,9 @@ export async function updateAdvert(id: string, input: Partial<AdvertInput>): Pro
     title: String(row.title),
     description: row.description,
     imageUrl: row.imageurl,
-    linkUrl: String(row.linkurl),
+    linkUrl: row.linkurl,
     position: row.position,
     status: row.status,
-    priority: Number(row.priority),
     startDate: row.startdate,
     endDate: row.enddate,
     createdAt: String(row.createdat),

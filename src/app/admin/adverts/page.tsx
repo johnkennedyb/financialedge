@@ -7,10 +7,9 @@ interface Advert {
   title: string;
   description: string | null;
   imageUrl: string | null;
-  linkUrl: string;
+  linkUrl: string | null;
   position: "homepage_hero" | "homepage_sidebar" | "footer" | "sidebar" | "inline";
   status: "active" | "inactive";
-  priority: number;
   startDate: string | null;
   endDate: string | null;
   createdAt: string;
@@ -40,7 +39,6 @@ export default function AdvertsPage() {
     linkUrl: "",
     position: "sidebar" as Advert["position"],
     status: "active" as "active" | "inactive",
-    priority: 0,
     startDate: "",
     endDate: "",
   });
@@ -67,8 +65,8 @@ export default function AdvertsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const url = editingAdvert 
-        ? `/api/admin/adverts?id=${editingAdvert.id}` 
+      const url = editingAdvert
+        ? `/api/admin/adverts?id=${editingAdvert.id}`
         : "/api/admin/adverts";
       const method = editingAdvert ? "PUT" : "POST";
 
@@ -112,10 +110,9 @@ export default function AdvertsPage() {
       title: advert.title,
       description: advert.description || "",
       imageUrl: advert.imageUrl || "",
-      linkUrl: advert.linkUrl,
+      linkUrl: advert.linkUrl || "",
       position: advert.position,
       status: advert.status,
-      priority: advert.priority,
       startDate: advert.startDate ? advert.startDate.split("T")[0] : "",
       endDate: advert.endDate ? advert.endDate.split("T")[0] : "",
     });
@@ -130,7 +127,6 @@ export default function AdvertsPage() {
       linkUrl: "",
       position: "sidebar",
       status: "active",
-      priority: 0,
       startDate: "",
       endDate: "",
     });
@@ -188,13 +184,12 @@ export default function AdvertsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Link URL *</label>
+                <label className="block text-sm font-medium mb-1">Link URL (optional)</label>
                 <input
                   type="url"
                   value={formData.linkUrl}
                   onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2"
-                  required
                   placeholder="https://..."
                 />
               </div>
@@ -210,16 +205,38 @@ export default function AdvertsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Image URL</label>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2"
-                  placeholder="https://..."
-                />
+                <label className="block text-sm font-medium mb-1">Image</label>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        try {
+                          const res = await fetch('/api/admin/media', {
+                            method: 'POST',
+                            body: formData,
+                          });
+                          if (res.ok) {
+                            const data = await res.json();
+                            setFormData(prev => ({ ...prev, imageUrl: data.url }));
+                          }
+                        } catch (err) {
+                          console.error('Upload failed:', err);
+                        }
+                      }
+                    }}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2"
+                  />
+                </div>
+                {formData.imageUrl && (
+                  <img src={formData.imageUrl} alt="Preview" className="mt-2 w-20 h-20 object-cover rounded" />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Position *</label>
@@ -236,6 +253,9 @@ export default function AdvertsPage() {
                   <option value="inline">Inline Content</option>
                 </select>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Status</label>
                 <select
@@ -246,20 +266,6 @@ export default function AdvertsPage() {
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Priority (0-100)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2"
-                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Start Date</label>
@@ -306,7 +312,6 @@ export default function AdvertsPage() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">Advert</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">Position</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">Priority</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">Stats</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-muted uppercase">Actions</th>
               </tr>
@@ -314,7 +319,7 @@ export default function AdvertsPage() {
             <tbody className="divide-y divide-border">
               {adverts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted">
+                  <td colSpan={5} className="px-4 py-8 text-center text-muted">
                     No adverts yet. Create your first advert to get started.
                   </td>
                 </tr>
@@ -345,16 +350,14 @@ export default function AdvertsPage() {
                     </td>
                     <td className="px-4 py-4">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          advert.status === "active"
+                        className={`px-2 py-1 rounded-full text-xs ${advert.status === "active"
                             ? "bg-green-500/10 text-green-500"
                             : "bg-gray-500/10 text-gray-500"
-                        }`}
+                          }`}
                       >
                         {advert.status}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-sm">{advert.priority}</td>
                     <td className="px-4 py-4 text-sm text-muted">
                       <div className="text-xs">
                         <span className="text-accent">{advert.clickCount}</span> clicks

@@ -48,7 +48,7 @@ export default async function HomePage() {
         <div className="flex flex-col items-center text-center">
           <h1 className="mt-4 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
             Financial edge, <br />
-            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-3xl sm:text-4xl lg:text-5xl">sustaining stakeholders relations</span>
+            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-4xl sm:text-5xl lg:text-6xl">sustaining stakeholders relations</span>
           </h1>
 
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>

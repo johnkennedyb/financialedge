@@ -116,7 +116,7 @@ export default function StockTickerBar({ stocks = defaultStocks, speed = 40 }: S
   const displayContent = [...shuffled, ...shuffled, ...shuffled];
 
   return (
-    <div className="bg-slate-900 border-b border-border overflow-hidden sticky top-0 z-50">
+    <div className="bg-slate-900 border-b border-border overflow-hidden fixed top-0 left-0 right-0 z-[9999]">
       <div className="flex items-center">
         {/* Market Status Label */}
         <div className="flex-shrink-0 bg-accent px-3 py-2 text-xs font-bold text-white z-10">

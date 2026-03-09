@@ -53,7 +53,7 @@ export default function RootLayout({
         {/* <ThemeScript /> */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-8`}
       >
         <StockTickerBar />
         <SiteHeader

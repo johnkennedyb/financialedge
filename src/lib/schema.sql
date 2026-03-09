@@ -97,10 +97,9 @@ CREATE TABLE IF NOT EXISTS adverts (
   title VARCHAR(500) NOT NULL,
   description TEXT,
   image_url VARCHAR(500),
-  link_url VARCHAR(500) NOT NULL,
+  link_url VARCHAR(500), -- optional
   position VARCHAR(50) DEFAULT 'sidebar', -- homepage_hero, homepage_sidebar, footer, sidebar, inline
   status VARCHAR(20) DEFAULT 'active', -- active, inactive
-  priority INTEGER DEFAULT 0,
   start_date TIMESTAMP,
   end_date TIMESTAMP,
   click_count INTEGER DEFAULT 0,
@@ -112,7 +111,6 @@ CREATE TABLE IF NOT EXISTS adverts (
 -- Create indexes for adverts
 CREATE INDEX IF NOT EXISTS idx_adverts_position ON adverts(position);
 CREATE INDEX IF NOT EXISTS idx_adverts_status ON adverts(status);
-CREATE INDEX IF NOT EXISTS idx_adverts_priority ON adverts(priority DESC);
 
 -- Insert default SEO settings
 INSERT INTO seo_settings (id, site_title, site_description) 

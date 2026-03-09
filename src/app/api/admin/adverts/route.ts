@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Validate required fields
-    if (!body.title || !body.linkUrl || !body.position) {
+    if (!body.title || !body.position) {
       return NextResponse.json(
-        { error: "Title, linkUrl, and position are required" },
+        { error: "Title and position are required" },
         { status: 400 }
       );
     }
@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
       linkUrl: body.linkUrl,
       position: body.position,
       status: body.status || "active",
-      priority: body.priority || 0,
       startDate: body.startDate,
       endDate: body.endDate,
     });
