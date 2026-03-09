@@ -42,13 +42,13 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-12 pb-12">
       {/* Hero Section */}
-      <section className="relative pt-2">
+      <section className="relative pt-4">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--gold-glow)_0%,transparent_100%)] opacity-50" />
 
         <div className="flex flex-col items-center text-center">
-          <h1 className="mt-2 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl lg:leading-[1.1] animate-fe-fade-up">
+          <h1 className="mt-4 max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl animate-fe-fade-up">
             Financial edge, <br />
-            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-4xl sm:text-5xl lg:text-6xl">sustaining stakeholders relations</span>
+            <span className="bg-gradient-to-r from-accent to-gold bg-clip-text text-transparent italic text-3xl sm:text-4xl lg:text-5xl">sustaining stakeholders relations</span>
           </h1>
 
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted animate-fe-fade-up" style={{ animationDelay: '100ms' }}>
