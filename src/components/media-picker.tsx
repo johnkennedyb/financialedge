@@ -31,7 +31,7 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
     try {
       setLoading(true);
       const wpMedia = await getAllMedia();
-      
+
       if (!wpMedia || !Array.isArray(wpMedia)) {
         setMediaFiles([]);
         return;
@@ -100,7 +100,7 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
         throw new Error(t || "Upload failed");
       }
       const uploaded = await res.json();
-      
+
       // Select the newly uploaded image
       onSelect(uploaded.url);
       onClose();
@@ -120,8 +120,8 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-background rounded-xl border border-border shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="bg-background rounded-xl border border-border shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-xl font-bold">Select Media</h2>
@@ -174,8 +174,8 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
               ) : filteredFiles.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-muted">No media files found.</p>
-                  <button 
-                    onClick={() => setActiveTab("upload")} 
+                  <button
+                    onClick={() => setActiveTab("upload")}
                     className="mt-2 text-accent hover:underline text-sm"
                   >
                     Upload new media
@@ -189,9 +189,9 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
                       onClick={() => handleSelectFromLibrary(file.url)}
                       className="group relative aspect-square rounded-lg border border-border overflow-hidden hover:border-accent transition-all"
                     >
-                      <img 
-                        src={file.url} 
-                        alt={file.name} 
+                      <img
+                        src={file.url}
+                        alt={file.name}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
@@ -222,7 +222,7 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
                   <span className="text-xs text-muted">or drag and drop</span>
                 </label>
               </div>
-              
+
               {selectedFile && (
                 <div className="space-y-2">
                   <p className="text-sm text-muted">Selected: {selectedFile.name}</p>

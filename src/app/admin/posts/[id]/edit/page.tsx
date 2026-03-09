@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { getPostById, getPostBySlug, updatePost, getAllCategories } from "@/lib/admin-api";
+import MediaPicker from "@/components/media-picker";
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -13,6 +14,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -319,40 +321,25 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                 </button>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="hidden"
-                  id="featured-image-upload"
-                />
-                <label
-                  htmlFor="featured-image-upload"
-                  className="cursor-pointer flex flex-col items-center gap-2"
-                >
-                  {uploading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-                      <span className="text-muted">Uploading to Cloudinary...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-4xl">📷</span>
-                      <span className="text-sm font-medium">Click to upload image</span>
-                      <span className="text-xs text-muted">or drag and drop</span>
-                      <span className="text-xs text-muted">JPG, PNG, GIF up to 10MB</span>
-                    </>
-                  )}
-                </label>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsMediaPickerOpen(true)}
+                className="w-full border-2 border-dashed border-border rounded-lg p-8 text-center hover:bg-secondary/50 transition-colors flex flex-col items-center gap-2"
+              >
+                <span className="text-4xl">📷</span>
+                <span className="text-sm font-medium">Select from Media Library</span>
+                <span className="text-xs text-muted">or upload new image</span>
+              </button>
             )}
             {formData.featuredImage && (
               <p className="text-xs text-muted break-all">{formData.featuredImage}</p>
             )}
           </div>
+          <MediaPicker
+            isOpen={isMediaPickerOpen}
+            onClose={() => setIsMediaPickerOpen(false)}
+            onSelect={(url) => setFormData(prev => ({ ...prev, featuredImage: url }))}
+          />
         </div>
 
         {/* Tags */}
