@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import LocalPostCard from "@/components/local-post-card";
+import AdvertBanner from "@/components/advert-banner";
 import {
     hasImportedContent,
     getPostsBySection,
@@ -82,19 +83,30 @@ export default async function CategoryPage({
                 </div>
             </section>
 
-            {/* Content Grid */}
+            {/* Content Grid with Sidebar */}
             <section className="mx-auto w-full max-w-7xl px-6">
                 {posts.length === 0 ? (
                     <div className="bento-item flex flex-col items-center justify-center py-20 text-center animate-fe-fade-in">
                         <p className="text-lg font-semibold text-muted">No signals detected in this sector.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {(posts as any[]).map((i, idx) => (
-                            <div key={i.slug} className="animate-fe-fade-up" style={{ animationDelay: `${idx * 50}ms` }}>
-                                <LocalPostCard item={i} />
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Main Content */}
+                        <div className="lg:col-span-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {(posts as any[]).map((i, idx) => (
+                                    <div key={i.slug} className="animate-fe-fade-up" style={{ animationDelay: `${idx * 50}ms` }}>
+                                        <LocalPostCard item={i} />
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        </div>
+                        {/* Sidebar with Advert */}
+                        <div className="lg:col-span-1">
+                            <div className="sticky top-24">
+                                <AdvertBanner position="sidebar" />
+                            </div>
+                        </div>
                     </div>
                 )}
             </section>

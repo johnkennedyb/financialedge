@@ -18,7 +18,7 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
   const advertContent = (
     <div className="relative overflow-hidden rounded-lg border border-border hover:border-accent transition-all hover:shadow-md">
       {advert.imageUrl ? (
-        <div className="relative aspect-[16/9] w-full">
+        <div className="relative aspect-[3/4] w-full min-h-[500px] max-h-[700px]">
           <Image
             src={advert.imageUrl}
             alt={advert.title}
@@ -27,8 +27,8 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
           />
         </div>
       ) : (
-        <div className="p-6 bg-gradient-to-br from-accent/10 to-gold/10">
-          <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors">
+        <div className="p-10 bg-gradient-to-br from-accent/10 to-gold/10 min-h-[400px] flex flex-col justify-center">
+          <h3 className="text-2xl font-semibold text-foreground group-hover:text-accent transition-colors">
             {advert.title}
           </h3>
           {advert.description && (

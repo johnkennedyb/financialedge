@@ -230,7 +230,12 @@ export default function AdvertsPage() {
                           });
                           if (res.ok) {
                             const data = await res.json();
+                            console.log('Upload response:', data);
                             setFormData(prev => ({ ...prev, imageUrl: data.url }));
+                          } else {
+                            console.error('Upload failed:', res.status);
+                            const errorData = await res.json().catch(() => ({}));
+                            console.error('Upload error:', errorData);
                           }
                         } catch (err) {
                           console.error('Upload failed:', err);
@@ -241,7 +246,11 @@ export default function AdvertsPage() {
                   />
                 </div>
                 {formData.imageUrl && (
-                  <img src={formData.imageUrl} alt="Preview" className="mt-2 w-20 h-20 object-cover rounded" />
+                  <div className="mt-2">
+                    <p className="text-xs text-muted mb-1">Current Image:</p>
+                    <img src={formData.imageUrl} alt="Preview" className="w-32 h-20 object-cover rounded border border-border" />
+                    <p className="text-xs text-muted mt-1 truncate max-w-xs">{formData.imageUrl}</p>
+                  </div>
                 )}
               </div>
               <div>

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Prose from "@/components/prose";
 import ShareButtons from "@/components/share-buttons";
 import FeaturedImage from "@/components/featured-image";
+import AdvertBanner from "@/components/advert-banner";
 import { decodeHtmlEntities } from "@/lib/html";
 import { getPostBySlug } from "@/lib/db-content";
 
@@ -130,6 +131,8 @@ export default async function SlugPage({
                     </div>
 
                     <aside className="hidden lg:block space-y-8 animate-fe-fade-in" style={{ animationDelay: '400ms' }}>
+                        <AdvertBanner position="sidebar" />
+
                         <div className="rounded-2xl border border-border bg-secondary/30 p-6 space-y-4">
                             <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Key Metrics</h4>
                             <div className="space-y-3">
