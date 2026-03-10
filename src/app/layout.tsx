@@ -4,10 +4,7 @@ import "./globals.css";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import StockTickerBar from "@/components/stock-ticker-bar";
 import ExchangeIndicesBar from "@/components/exchange-indices-bar";
-import NewsTickerBar from "@/components/news-ticker-bar";
-import SectorsTickerBar from "@/components/sectors-ticker-bar";
 
 // function ThemeScript() {
 //   const script = `(() => {
@@ -56,12 +53,9 @@ export default function RootLayout({
         {/* <ThemeScript /> */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-[220px]`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-[210px]`}
       >
-        <StockTickerBar />
         <ExchangeIndicesBar />
-        <NewsTickerBar />
-        <SectorsTickerBar />
         <SiteHeader
           items={[
             { label: "Home", href: "/" },
