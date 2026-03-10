@@ -66,7 +66,7 @@ export default function RootLayout({
             { label: "Industry", href: "/category/industry" },
           ]}
         />
-        <section className="relative mt-[14px] sm:mt-5">
+        <section className="relative mt-[14px] sm:mt-[23px]">
           <div className="mx-auto w-full max-w-6xl px-4 py-6 md:py-8">{children}</div>
         </section>
         <SiteFooter />
