@@ -176,70 +176,52 @@ export async function createVideo(input: VideoInput): Promise<Video> {
 export async function updateVideo(id: string, input: Partial<VideoInput>): Promise<Video> {
   const db = getDb();
   
-  // Build dynamic update
-  const updates: string[] = [];
-  const values: any[] = [];
-  let paramCount = 1;
+  // Get existing video first
+  const existing = await getVideoById(id);
+  if (!existing) {
+    throw new Error("Video not found");
+  }
   
-  if (input.title !== undefined) {
-    updates.push(`title = $${paramCount++}`);
-    values.push(input.title);
-  }
-  if (input.description !== undefined) {
-    updates.push(`description = $${paramCount++}`);
-    values.push(input.description);
-  }
-  if (input.youtubeUrl !== undefined) {
-    const youtubeId = extractYouTubeId(input.youtubeUrl);
-    if (!youtubeId) {
+  // Build updated values, using existing as fallback
+  const title = input.title ?? existing.title;
+  const description = input.description ?? existing.description;
+  const status = input.status ?? existing.status;
+  const position = input.position ?? existing.position;
+  const sortOrder = input.sortOrder ?? existing.sortOrder;
+  
+  // Handle YouTube URL change
+  let youtubeUrl = input.youtubeUrl ?? existing.youtubeUrl;
+  let youtubeId = existing.youtubeId;
+  let thumbnailUrl = existing.thumbnailUrl;
+  
+  if (input.youtubeUrl) {
+    const newYoutubeId = extractYouTubeId(input.youtubeUrl);
+    if (!newYoutubeId) {
       throw new Error("Invalid YouTube URL");
     }
-    updates.push(`youtube_url = $${paramCount++}`);
-    values.push(input.youtubeUrl);
-    updates.push(`youtube_id = $${paramCount++}`);
-    values.push(youtubeId);
-    updates.push(`thumbnail_url = $${paramCount++}`);
-    values.push(getYouTubeThumbnail(youtubeId));
-  }
-  if (input.status !== undefined) {
-    updates.push(`status = $${paramCount++}`);
-    values.push(input.status);
-  }
-  if (input.position !== undefined) {
-    updates.push(`position = $${paramCount++}`);
-    values.push(input.position);
-  }
-  if (input.sortOrder !== undefined) {
-    updates.push(`sort_order = $${paramCount++}`);
-    values.push(input.sortOrder);
+    youtubeId = newYoutubeId;
+    thumbnailUrl = getYouTubeThumbnail(newYoutubeId);
   }
   
-  updates.push(`updated_at = CURRENT_TIMESTAMP`);
-  
-  // Build the query with embedded values for unsafe()
-  const setClause = updates.map((update, index) => {
-    const value = values[index];
-    if (typeof value === 'string') {
-      return `${update.replace(/\$\d+/, "'$1'")}`.replace("'$1'", value.replace(/'/g, "''"));
-    }
-    return update.replace(/\$\d+/, String(value));
-  }).join(', ');
-  
-  const query = `
+  const result = await db`
     UPDATE videos 
-    SET ${setClause} 
-    WHERE id = '${id.replace(/'/g, "''")}'
+    SET 
+      title = ${title},
+      description = ${description},
+      youtube_url = ${youtubeUrl},
+      youtube_id = ${youtubeId},
+      thumbnail_url = ${thumbnailUrl},
+      status = ${status},
+      position = ${position},
+      sort_order = ${sortOrder},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ${id}
     RETURNING 
       id, title, description, youtube_url as youtubeUrl, 
       youtube_id as youtubeId, thumbnail_url as thumbnailUrl,
       status, position, sort_order as sortOrder,
       created_at as createdAt, updated_at as updatedAt
   `;
-  
-  const result = await db.unsafe(query);
-  if (result.length === 0) {
-    throw new Error("Video not found");
-  }
   
   const row = result[0];
   return {
