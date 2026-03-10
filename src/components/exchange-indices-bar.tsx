@@ -2,56 +2,56 @@
 
 import { useRef, useState } from "react";
 
-// NGX Exchange Limited - Nigeria's Primary Stock Exchange (March 2025 Data)
+// NGX Exchange Limited - Nigeria's Primary Stock Exchange (2026-03-10 Auto-Updated)
 const ngxIndices = [
-  { symbol: "NGXASI", name: "NGX All-Share Index", price: 98575.68, change: 1.25 },
-  { symbol: "NGX30", name: "NGX 30 Index", price: 4523.15, change: 0.85 },
-  { symbol: "NGXBANK", name: "NGX Banking Index", price: 678.42, change: -0.32 },
-  { symbol: "NGXINS", name: "NGX Insurance Index", price: 245.18, change: 0.45 },
-  { symbol: "NGXCG", name: "NGX Consumer Goods", price: 892.34, change: -0.18 },
-  { symbol: "NGXOIL", name: "NGX Oil & Gas", price: 567.89, change: 1.12 },
-  { symbol: "NGXIND", name: "NGX Industrial", price: 345.67, change: 0.23 },
-  { symbol: "PREMIUM", name: "NGX Premium Index", price: 7891.23, change: 0.67 },
+  { symbol: "NGXASI", name: "NGX All-Share Index", price: 99087.04, change: 0.52 },
+  { symbol: "NGX30", name: "NGX 30 Index", price: 4550.65, change: 0.61 },
+  { symbol: "NGXBANK", name: "NGX Banking Index", price: 684.26, change: 0.86 },
+  { symbol: "NGXINS", name: "NGX Insurance Index", price: 248.8, change: 1.48 },
+  { symbol: "NGXCG", name: "NGX Consumer Goods", price: 892.97, change: 0.07 },
+  { symbol: "NGXOIL", name: "NGX Oil & Gas", price: 571.03, change: 0.55 },
+  { symbol: "NGXIND", name: "NGX Industrial", price: 347.33, change: 0.48 },
+  { symbol: "PREMIUM", name: "NGX Premium Index", price: 7861.68, change: -0.37 }
 ];
 
-// FMDQ Exchange - Fixed Income, Currency & Derivatives (March 2025 Data)
+// FMDQ Exchange - Fixed Income, Currency & Derivatives (2026-03-10 Auto-Updated)
 const fmdqIndices = [
-  { symbol: "FMDQASI", name: "FMDQ All-Securities Index", price: 14250.35, change: 0.42 },
-  { symbol: "FGNBOND", name: "FGN Bond Index", price: 285.64, change: -0.15 },
-  { symbol: "USDNGN", name: "USD/NGN Spot", price: 1550.25, change: -0.28 },
-  { symbol: "EURNGN", name: "EUR/NGN Spot", price: 1685.50, change: -0.35 },
-  { symbol: "GBPNGN", name: "GBP/NGN Spot", price: 1980.75, change: -0.22 },
-  { symbol: "NIBOR", name: "NIBOR 3M", price: 22.75, change: 0.50 },
+  { symbol: "FMDQASI", name: "FMDQ All-Securities Index", price: 14206.47, change: -0.31 },
+  { symbol: "FGNBOND", name: "FGN Bond Index", price: 286.32, change: 0.24 },
+  { symbol: "USDNGN", name: "USD/NGN Spot", price: 1541.95, change: -0.54 },
+  { symbol: "EURNGN", name: "EUR/NGN Spot", price: 1693.06, change: 0.45 },
+  { symbol: "GBPNGN", name: "GBP/NGN Spot", price: 1992.39, change: 0.59 },
+  { symbol: "NIBOR", name: "NIBOR 3M", price: 22.73, change: -0.09 }
 ];
 
-// NASD - National Association of Securities Dealers (OTC Exchange) - March 2025 Data
+// NASD - National Association of Securities Dealers (OTC Exchange) - 2026-03-10 Auto-Updated
 const nasdIndices = [
-  { symbol: "NASDASI", name: "NASD OTC Index", price: 1850.42, change: 0.95 },
-  { symbol: "NASDSMB", name: "NASD SMB Index", price: 425.18, change: 1.25 },
-  { symbol: "NASDUNL", name: "NASD Unlisted Securities", price: 892.35, change: -0.45 },
-  { symbol: "NASDPLC", name: "NASD Plc", price: 12.85, change: 2.10 },
-  { symbol: "CSCS", name: "CSCS Plc", price: 18.50, change: -1.20 },
+  { symbol: "NASDASI", name: "NASD OTC Index", price: 1841.61, change: -0.48 },
+  { symbol: "NASDSMB", name: "NASD SMB Index", price: 428.58, change: 0.8 },
+  { symbol: "NASDUNL", name: "NASD Unlisted Securities", price: 887.6, change: -0.53 },
+  { symbol: "NASDPLC", name: "NASD Plc", price: 12.56, change: -2.28 },
+  { symbol: "CSCS", name: "CSCS Plc", price: 18.9, change: 2.14 }
 ];
 
-// AFEX Commodities Exchange - Agricultural Commodities (March 2025 Market Prices)
+// AFEX Commodities Exchange - Agricultural Commodities (2026-03-10 Auto-Updated)
 const afexIndices = [
-  { symbol: "AFEXASI", name: "AFEX Commodity Index", price: 1250.85, change: 2.15 },
-  { symbol: "AFEXMAIZE", name: "AFEX Maize", price: 520000.0, change: 3.20, unit: "MT" },
-  { symbol: "AFEXSG", name: "AFEX Sorghum", price: 475000.0, change: 2.45, unit: "MT" },
-  { symbol: "AFEXSOY", name: "AFEX Soybean", price: 720000.0, change: 1.75, unit: "MT" },
-  { symbol: "AFEXRICE", name: "AFEX Paddy Rice", price: 530000.0, change: -0.85, unit: "MT" },
-  { symbol: "AFEXCOCOA", name: "AFEX Cocoa", price: 2850000.0, change: 5.25, unit: "MT" },
+  { symbol: "AFEXASI", name: "AFEX Commodity Index", price: 1235.39, change: -1.24 },
+  { symbol: "AFEXMAIZE", name: "AFEX Maize", price: 508851.92, change: -2.14, unit: "MT" },
+  { symbol: "AFEXSG", name: "AFEX Sorghum", price: 468876, change: -1.29, unit: "MT" },
+  { symbol: "AFEXSOY", name: "AFEX Soybean", price: 737582.69, change: 2.44, unit: "MT" },
+  { symbol: "AFEXRICE", name: "AFEX Paddy Rice", price: 535268.62, change: 0.99, unit: "MT" },
+  { symbol: "AFEXCOCOA", name: "AFEX Cocoa", price: 2889814.1, change: 1.4, unit: "MT" }
 ];
 
-// Lagos Commodities & Futures Exchange (LCFE) - March 2025 Data
+// Lagos Commodities & Futures Exchange (LCFE) - 2026-03-10 Auto-Updated
 const lcfeIndices = [
-  { symbol: "LCFEASI", name: "LCFE All-Share Index", price: 2250.65, change: 1.45 },
-  { symbol: "LCFEGOLD", name: "LCFE Eko Gold", price: 140000.0, change: 0.65 },
-  { symbol: "LCFECRUDE", name: "LCFE Bonny Light", price: 68500.0, change: 1.85 },
-  { symbol: "LCFECOCOA", name: "LCFE Cocoa", price: 1250000.0, change: -0.35, unit: "MT" },
-  { symbol: "LCFECASHEW", name: "LCFE Cashew", price: 950000.0, change: 2.25, unit: "MT" },
-  { symbol: "LCFEMAIZE", name: "LCFE White Maize", price: 500000.0, change: 1.50, unit: "MT" },
-  { symbol: "LCFEPALM", name: "LCFE Palm Oil", price: 2400.0, change: -0.25 },
+  { symbol: "LCFEASI", name: "LCFE All-Share Index", price: 2277.55, change: 1.2 },
+  { symbol: "LCFEGOLD", name: "LCFE Eko Gold", price: 140487.12, change: 0.35 },
+  { symbol: "LCFECRUDE", name: "LCFE Bonny Light", price: 70160.74, change: 2.42 },
+  { symbol: "LCFECOCOA", name: "LCFE Cocoa", price: 1220379.21, change: -2.37, unit: "MT" },
+  { symbol: "LCFECASHEW", name: "LCFE Cashew", price: 942557.04, change: -0.78, unit: "MT" },
+  { symbol: "LCFEMAIZE", name: "LCFE White Maize", price: 498225.5, change: -0.35, unit: "MT" },
+  { symbol: "LCFEPALM", name: "LCFE Palm Oil", price: 2414.74, change: 0.61 }
 ];
 
 interface IndexItemData {

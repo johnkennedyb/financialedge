@@ -53,7 +53,7 @@ export default function RootLayout({
         {/* <ThemeScript /> */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-[165px]`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-[200px]`}
       >
         <ExchangeIndicesBar />
         <SiteHeader
@@ -66,9 +66,9 @@ export default function RootLayout({
             { label: "Industry", href: "/category/industry" },
           ]}
         />
-        <div className="bg-grid">
+        <section className="relative mt-16">
           <div className="mx-auto w-full max-w-6xl px-4 py-6 md:py-8">{children}</div>
-        </div>
+        </section>
         <SiteFooter />
       </body>
     </html>

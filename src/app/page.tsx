@@ -45,8 +45,8 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col pb-12">
-      {/* Hero Section - No gap with menu */}
-      <section className="relative -mt-1">
+      {/* Hero Section - High margin to clear tickers */}
+      <section className="relative mt-20">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--gold-glow)_0%,transparent_100%)] opacity-50" />
 
         <div className="flex flex-col items-center text-center pt-1">
