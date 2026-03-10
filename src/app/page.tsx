@@ -169,7 +169,7 @@ export default async function HomePage() {
                     </Link>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                     {visiblePosts.map((post) => (
                       <LocalPostCard key={post.slug} item={post} />
                     ))}
@@ -200,7 +200,7 @@ export default async function HomePage() {
                     <p className="mt-1 text-muted text-sm">Recent articles across all topics</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                   {uncategorizedPosts.slice(0, 6).map((post) => (
                     <LocalPostCard key={post.slug} item={post} />
                   ))}
