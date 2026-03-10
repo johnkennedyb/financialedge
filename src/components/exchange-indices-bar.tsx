@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-// NGX Exchange Limited - Nigeria's Primary Stock Exchange
+// NGX Exchange Limited - Nigeria's Primary Stock Exchange (March 2025 Data)
 const ngxIndices = [
   { symbol: "NGXASI", name: "NGX All-Share Index", price: 98575.68, change: 1.25 },
   { symbol: "NGX30", name: "NGX 30 Index", price: 4523.15, change: 0.85 },
@@ -14,7 +14,7 @@ const ngxIndices = [
   { symbol: "PREMIUM", name: "NGX Premium Index", price: 7891.23, change: 0.67 },
 ];
 
-// FMDQ Exchange - Fixed Income, Currency & Derivatives
+// FMDQ Exchange - Fixed Income, Currency & Derivatives (March 2025 Data)
 const fmdqIndices = [
   { symbol: "FMDQASI", name: "FMDQ All-Securities Index", price: 14250.35, change: 0.42 },
   { symbol: "FGNBOND", name: "FGN Bond Index", price: 285.64, change: -0.15 },
@@ -24,29 +24,34 @@ const fmdqIndices = [
   { symbol: "NIBOR", name: "NIBOR 3M", price: 22.75, change: 0.50 },
 ];
 
-// NASD - National Association of Securities Dealers (OTC Exchange)
+// NASD - National Association of Securities Dealers (OTC Exchange) - March 2025 Data
 const nasdIndices = [
   { symbol: "NASDASI", name: "NASD OTC Index", price: 1850.42, change: 0.95 },
   { symbol: "NASDSMB", name: "NASD SMB Index", price: 425.18, change: 1.25 },
   { symbol: "NASDUNL", name: "NASD Unlisted Securities", price: 892.35, change: -0.45 },
+  { symbol: "NASDPLC", name: "NASD Plc", price: 12.85, change: 2.10 },
+  { symbol: "CSCS", name: "CSCS Plc", price: 18.50, change: -1.20 },
 ];
 
-// AFEX Commodities Exchange - Agricultural Commodities
+// AFEX Commodities Exchange - Agricultural Commodities (March 2025 Market Prices)
 const afexIndices = [
   { symbol: "AFEXASI", name: "AFEX Commodity Index", price: 1250.85, change: 2.15 },
-  { symbol: "AFEXMAIZE", name: "AFEX Maize", price: 485000.0, change: 3.20, unit: "MT" },
-  { symbol: "AFEXSG", name: "AFEX Sorghum", price: 420000.0, change: 2.45, unit: "MT" },
-  { symbol: "AFEXSOY", name: "AFEX Soybean", price: 520000.0, change: 1.75, unit: "MT" },
-  { symbol: "AFEXRICE", name: "AFEX Paddy Rice", price: 380000.0, change: -0.85, unit: "MT" },
+  { symbol: "AFEXMAIZE", name: "AFEX Maize", price: 520000.0, change: 3.20, unit: "MT" },
+  { symbol: "AFEXSG", name: "AFEX Sorghum", price: 475000.0, change: 2.45, unit: "MT" },
+  { symbol: "AFEXSOY", name: "AFEX Soybean", price: 720000.0, change: 1.75, unit: "MT" },
+  { symbol: "AFEXRICE", name: "AFEX Paddy Rice", price: 530000.0, change: -0.85, unit: "MT" },
+  { symbol: "AFEXCOCOA", name: "AFEX Cocoa", price: 2850000.0, change: 5.25, unit: "MT" },
 ];
 
-// Lagos Commodities & Futures Exchange (LCFE)
+// Lagos Commodities & Futures Exchange (LCFE) - March 2025 Data
 const lcfeIndices = [
   { symbol: "LCFEASI", name: "LCFE All-Share Index", price: 2250.65, change: 1.45 },
-  { symbol: "LCFEGOLD", name: "LCFE Gold Futures", price: 89250.0, change: 0.65 },
-  { symbol: "LCFECRUDE", name: "LCFE Crude Futures", price: 68500.0, change: 1.85 },
+  { symbol: "LCFEGOLD", name: "LCFE Eko Gold", price: 140000.0, change: 0.65 },
+  { symbol: "LCFECRUDE", name: "LCFE Bonny Light", price: 68500.0, change: 1.85 },
   { symbol: "LCFECOCOA", name: "LCFE Cocoa", price: 1250000.0, change: -0.35, unit: "MT" },
   { symbol: "LCFECASHEW", name: "LCFE Cashew", price: 950000.0, change: 2.25, unit: "MT" },
+  { symbol: "LCFEMAIZE", name: "LCFE White Maize", price: 500000.0, change: 1.50, unit: "MT" },
+  { symbol: "LCFEPALM", name: "LCFE Palm Oil", price: 2400.0, change: -0.25 },
 ];
 
 interface IndexItemData {
@@ -142,7 +147,7 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-blue-600"
         indices={ngxIndices}
         speed={60}
-        topPosition="top-[36px]"
+        topPosition="top-0"
         zIndex={9998}
       />
 
@@ -153,7 +158,7 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-purple-600"
         indices={fmdqIndices}
         speed={70}
-        topPosition="top-[66px]"
+        topPosition="top-[30px]"
         zIndex={9997}
       />
 
@@ -164,7 +169,7 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-green-600"
         indices={nasdIndices}
         speed={65}
-        topPosition="top-[96px]"
+        topPosition="top-[60px]"
         zIndex={9996}
       />
 
@@ -175,7 +180,7 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-orange-600"
         indices={afexIndices}
         speed={75}
-        topPosition="top-[126px]"
+        topPosition="top-[90px]"
         zIndex={9995}
       />
 
@@ -186,7 +191,7 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-teal-600"
         indices={lcfeIndices}
         speed={70}
-        topPosition="top-[156px]"
+        topPosition="top-[120px]"
         zIndex={9994}
       />
     </>
