@@ -215,12 +215,20 @@ export async function updateVideo(id: string, input: Partial<VideoInput>): Promi
   }
   
   updates.push(`updated_at = CURRENT_TIMESTAMP`);
-  values.push(id);
+  
+  // Build the query with embedded values for unsafe()
+  const setClause = updates.map((update, index) => {
+    const value = values[index];
+    if (typeof value === 'string') {
+      return `${update.replace(/\$\d+/, "'$1'")}`.replace("'$1'", value.replace(/'/g, "''"));
+    }
+    return update.replace(/\$\d+/, String(value));
+  }).join(', ');
   
   const query = `
     UPDATE videos 
-    SET ${updates.join(', ')} 
-    WHERE id = $${paramCount}
+    SET ${setClause} 
+    WHERE id = '${id.replace(/'/g, "''")}'
     RETURNING 
       id, title, description, youtube_url as youtubeUrl, 
       youtube_id as youtubeId, thumbnail_url as thumbnailUrl,
@@ -228,7 +236,7 @@ export async function updateVideo(id: string, input: Partial<VideoInput>): Promi
       created_at as createdAt, updated_at as updatedAt
   `;
   
-  const result = await db.unsafe(query, values);
+  const result = await db.unsafe(query);
   if (result.length === 0) {
     throw new Error("Video not found");
   }
