@@ -319,6 +319,7 @@ html {
 @layer components {
   .prose {
     line-height: 1.75;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   }
 
   .prose h1 {

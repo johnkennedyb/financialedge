@@ -17,13 +17,13 @@ export default function PostCard({ post }: { post: WPPost }) {
     return (
         <article className="group overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-zinc-950">
             <Link href={`/${post.slug}`} className="block">
-                <div className="relative aspect-[16/9] w-full bg-zinc-100 dark:bg-zinc-900">
+                <div className="relative aspect-[16/9] w-full bg-black">
                     {img ? (
                         <SafeImage
                             src={img}
                             alt={title}
                             fill
-                            className="object-cover transition duration-300 group-hover:scale-[1.02]"
+                            className="object-contain transition duration-300 group-hover:scale-[1.02]"
                             sizes="(max-width: 768px) 100vw, 33vw"
                             priority={false}
                         />

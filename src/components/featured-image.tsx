@@ -14,14 +14,14 @@ export default function FeaturedImage({ src, alt }: FeaturedImageProps) {
   return (
     <>
       <div
-        className="image-container relative w-full overflow-hidden rounded-3xl border border-border shadow-elevated animate-fe-fade-up cursor-pointer hover:shadow-lg transition-shadow bg-secondary/50"
+        className="image-container relative w-full overflow-hidden rounded-3xl border border-border shadow-elevated animate-fe-fade-up cursor-pointer hover:shadow-lg transition-shadow bg-black"
         style={{ animationDelay: '100ms' }}
         onClick={() => setIsLightboxOpen(true)}
       >
         <img
           src={src}
           alt={alt}
-          className="w-full h-[300px] object-cover object-top"
+          className="w-full h-[300px] object-contain"
           sizes="(max-width: 1024px) 100vw, 1200px"
         />
         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center">

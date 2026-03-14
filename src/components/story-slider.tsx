@@ -22,7 +22,7 @@ export default function StorySlider({ stories }: StorySliderProps) {
 
   useEffect(() => {
     if (!isAutoPlaying || stories.length <= 1) return;
-    
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % stories.length);
     }, 5000);
@@ -52,19 +52,19 @@ export default function StorySlider({ stories }: StorySliderProps) {
 
   return (
     <div className="w-full max-w-6xl mx-auto mt-4">
-      <div className="relative h-[400px] md:h-[500px] rounded-xl overflow-hidden group">
+      <div className="relative h-[400px] md:h-[500px] rounded-xl overflow-hidden group bg-black">
         {/* Background Image */}
         <Image
           src={currentStory.featuredImage || fallbackImages[imgIndex]}
           alt={currentStory.title}
           fill
-          className="object-cover transition-transform duration-700"
+          className="object-contain transition-transform duration-700"
           priority
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        
+
         {/* Content */}
         <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
           {currentStory.section && (
@@ -80,7 +80,7 @@ export default function StorySlider({ stories }: StorySliderProps) {
               {currentStory.description}
             </p>
           )}
-          <Link 
+          <Link
             href={`/${currentStory.slug}`}
             className="mt-6 inline-flex items-center gap-2 text-accent font-semibold hover:underline"
           >
@@ -117,9 +117,8 @@ export default function StorySlider({ stories }: StorySliderProps) {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex ? "bg-white w-6" : "bg-white/50"
-              }`}
+              className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? "bg-white w-6" : "bg-white/50"
+                }`}
               aria-label={`Go to story ${index + 1}`}
             />
           ))}

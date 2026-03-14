@@ -37,7 +37,7 @@ export default function SafeImage({ src, fallbackSrc, alt = "", fill, className 
     };
 
     const style: React.CSSProperties = fill
-        ? { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }
+        ? { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }
         : {};
 
     return (

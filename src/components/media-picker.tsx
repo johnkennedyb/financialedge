@@ -192,7 +192,7 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
                       <img
                         src={file.url}
                         alt={file.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">

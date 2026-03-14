@@ -61,12 +61,12 @@ export default function LocalPostCard({ item }: { item: ContentIndexItem }) {
     return (
         <article className="group animate-fe-fade-up card overflow-hidden h-full transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(11,15,26,0.12)] active:translate-y-0">
             <Link href={`/${item.slug}`} className="block h-full">
-                <div className="relative h-[300px] w-full bg-zinc-100">
+                <div className="relative h-[300px] w-full bg-black">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src={heroImage || fallbackImages[imgIndex]}
                         alt={title}
-                        className="absolute inset-0 h-full w-full object-cover object-top transition duration-300 group-hover:scale-[1.03]"
+                        className="absolute inset-0 h-full w-full object-contain transition duration-300 group-hover:scale-[1.03]"
                         loading="lazy"
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
