@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getPostById, getPostBySlug, updatePost, getAllCategories } from "@/lib/admin-api";
 import MediaPicker from "@/components/media-picker";
 import RichTextEditor from "@/components/rich-text-editor";
-import "../../rich-text-editor.css";
+import "../../../rich-text-editor.css";
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
