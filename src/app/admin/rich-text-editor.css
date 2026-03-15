@@ -1,0 +1,170 @@
+/* Custom Rich Text Editor Styles */
+.rich-text-editor .ql-toolbar {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--card));
+}
+
+.rich-text-editor .ql-container {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--background));
+  min-height: 300px;
+}
+
+.rich-text-editor .ql-editor {
+  min-height: 300px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rich-text-editor .ql-editor p {
+  margin-bottom: 0.75rem;
+}
+
+.rich-text-editor .ql-editor h1,
+.rich-text-editor .ql-editor h2,
+.rich-text-editor .ql-editor h3,
+.rich-text-editor .ql-editor h4,
+.rich-text-editor .ql-editor h5,
+.rich-text-editor .ql-editor h6 {
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.rich-text-editor .ql-editor ul,
+.rich-text-editor .ql-editor ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.rich-text-editor .ql-editor blockquote {
+  border-left: 3px solid hsl(var(--border));
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: hsl(var(--muted-foreground));
+}
+
+.rich-text-editor .ql-editor code {
+  background-color: hsl(var(--secondary));
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+}
+
+.rich-text-editor .ql-editor pre {
+  background-color: hsl(var(--secondary));
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.rich-text-editor .ql-editor a {
+  color: hsl(var(--accent));
+  text-decoration: underline;
+}
+
+/* Toolbar button styling */
+.rich-text-editor .ql-toolbar button {
+  border-radius: 0.25rem;
+}
+
+.rich-text-editor .ql-toolbar button:hover {
+  background-color: hsl(var(--accent) / 0.1);
+}
+
+.rich-text-editor .ql-toolbar .ql-active {
+  background-color: hsl(var(--accent) / 0.2);
+}
+
+/* Font dropdown styling */
+.rich-text-editor .ql-picker-label {
+  border-radius: 0.25rem;
+}
+
+.rich-text-editor .ql-picker-options {
+  border-radius: 0.25rem;
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+/* Custom font families */
+.rich-text-editor .ql-font-arial {
+  font-family: Arial, sans-serif;
+}
+
+.rich-text-editor .ql-font-courier-new {
+  font-family: "Courier New", monospace;
+}
+
+.rich-text-editor .ql-font-georgia {
+  font-family: Georgia, serif;
+}
+
+.rich-text-editor .ql-font-helvetica {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.rich-text-editor .ql-font-lucida {
+  font-family: "Lucida Console", monospace;
+}
+
+.rich-text-editor .ql-font-times-new-roman {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.rich-text-editor .ql-font-verdana {
+  font-family: Verdana, sans-serif;
+}
+
+.rich-text-editor .ql-font-impact {
+  font-family: Impact, sans-serif;
+}
+
+.rich-text-editor .ql-font-comic-sans-ms {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+.rich-text-editor .ql-font-trebuchet-ms {
+  font-family: "Trebuchet MS", sans-serif;
+}
+
+/* Dark mode adjustments */
+.dark .rich-text-editor .ql-toolbar {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark .rich-text-editor .ql-container {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
+.dark .rich-text-editor .ql-editor {
+  color: hsl(var(--foreground));
+}
+
+.dark .rich-text-editor .ql-picker-options {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+}
+
+.dark .rich-text-editor .ql-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.dark .rich-text-editor .ql-fill {
+  fill: hsl(var(--foreground));
+}
+
+.dark .rich-text-editor .ql-picker-label {
+  color: hsl(var(--foreground));
+}
+
+.dark .rich-text-editor .ql-picker-item {
+  color: hsl(var(--foreground));
+}

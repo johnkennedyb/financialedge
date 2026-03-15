@@ -142,7 +142,7 @@ export default function ExchangeIndicesBar() {
 
       {/* 1. Nigeria Exchange Limited (NGX) */}
       <ExchangeTickerBar
-        label="NGX EXCHANGE"
+        label="1.NGX"
         bgColor="bg-blue-900"
         labelColor="bg-blue-600"
         indices={ngxIndices}
@@ -153,7 +153,7 @@ export default function ExchangeIndicesBar() {
 
       {/* 2. FMDQ Exchange */}
       <ExchangeTickerBar
-        label="FMDQ EXCHANGE"
+        label="2. FMDQ"
         bgColor="bg-purple-900"
         labelColor="bg-purple-600"
         indices={fmdqIndices}
@@ -164,7 +164,7 @@ export default function ExchangeIndicesBar() {
 
       {/* 3. NASD - National Association of Securities Dealers */}
       <ExchangeTickerBar
-        label="NASD OTC"
+        label="3. NASD"
         bgColor="bg-green-900"
         labelColor="bg-green-600"
         indices={nasdIndices}
@@ -175,7 +175,7 @@ export default function ExchangeIndicesBar() {
 
       {/* 4. AFEX Commodities Exchange */}
       <ExchangeTickerBar
-        label="AFEX COMMODITIES"
+        label="4. AFEX"
         bgColor="bg-orange-900"
         labelColor="bg-orange-600"
         indices={afexIndices}
@@ -186,7 +186,7 @@ export default function ExchangeIndicesBar() {
 
       {/* 5. Lagos Commodities & Futures Exchange (LCFE) */}
       <ExchangeTickerBar
-        label="LAGOS COMMODITIES"
+        label="5. LCFE"
         bgColor="bg-teal-900"
         labelColor="bg-teal-600"
         indices={lcfeIndices}

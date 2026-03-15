@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createPost, getAllCategories } from "@/lib/admin-api";
 import MediaPicker from "@/components/media-picker";
+import RichTextEditor from "@/components/rich-text-editor";
+import "../rich-text-editor.css";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -223,13 +225,10 @@ export default function NewPostPage() {
         {/* Content */}
         <div>
           <label className="block text-sm font-medium mb-2">Content</label>
-          <textarea
-            name="content"
+          <RichTextEditor
             value={formData.content}
-            onChange={handleChange}
+            onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
             placeholder="Write your post content here..."
-            rows={12}
-            className="w-full rounded-lg border border-border bg-background px-4 py-2 placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent font-mono text-sm"
           />
         </div>
 
