@@ -14,7 +14,11 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      import("react-quill").then((mod) => {
+      // Import CSS first, then component
+      Promise.all([
+        import("react-quill/dist/quill.snow.css"),
+        import("react-quill")
+      ]).then(([, mod]) => {
         setQuillComponent(() => mod.default);
         setMounted(true);
       });
@@ -46,7 +50,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   };
 
   return (
-    <div className="rich-text-editor">
+    <div className="rich-text-editor" style={{ minHeight: "300px" }}>
       <QuillComponent
         theme="snow"
         value={value}
