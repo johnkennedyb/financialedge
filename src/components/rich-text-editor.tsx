@@ -25,7 +25,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         const Quill = QuillModule.default || QuillModule;
 
         // Register custom fonts
-        const Font = Quill.import("formats/font");
+        const Font = Quill.import("formats/font") as any;
         Font.whitelist = [
           "arial", "courier-new", "georgia", "helvetica", "lucida",
           "times-new-roman", "verdana", "impact", "comic-sans-ms", "trebuchet-ms"
@@ -33,7 +33,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         Quill.register(Font, true);
 
         // Register custom font sizes
-        const Size = Quill.import("formats/size");
+        const Size = Quill.import("formats/size") as any;
         Size.whitelist = ["8px", "10px", "12px", "14px", "16px", "18px", "20px", "24px", "30px", "36px", "48px"];
         Quill.register(Size, true);
 
