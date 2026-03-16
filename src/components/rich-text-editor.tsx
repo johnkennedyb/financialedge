@@ -13,31 +13,10 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   const [QuillComponent, setQuillComponent] = useState<any>(null);
 
   useEffect(() => {
-    setMounted(true);
-
     if (typeof window !== "undefined") {
-      // Dynamic import to avoid SSR issues
-      Promise.all([
-        import("react-quill"),
-        import("quill")
-      ]).then(([ReactQuillModule, QuillModule]) => {
-        const ReactQuill = ReactQuillModule.default;
-        const Quill = QuillModule.default || QuillModule;
-
-        // Register custom fonts
-        const Font = Quill.import("formats/font") as any;
-        Font.whitelist = [
-          "arial", "courier-new", "georgia", "helvetica", "lucida",
-          "times-new-roman", "verdana", "impact", "comic-sans-ms", "trebuchet-ms"
-        ];
-        Quill.register(Font, true);
-
-        // Register custom font sizes
-        const Size = Quill.import("formats/size") as any;
-        Size.whitelist = ["8px", "10px", "12px", "14px", "16px", "18px", "20px", "24px", "30px", "36px", "48px"];
-        Quill.register(Size, true);
-
-        setQuillComponent(() => ReactQuill);
+      import("react-quill").then((mod) => {
+        setQuillComponent(() => mod.default);
+        setMounted(true);
       });
     }
   }, []);
@@ -52,8 +31,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
   const modules = {
     toolbar: [
-      [{ font: ["arial", "courier-new", "georgia", "helvetica", "lucida", "times-new-roman", "verdana", "impact", "comic-sans-ms", "trebuchet-ms"] }],
-      [{ size: ["8px", "10px", "12px", "14px", "16px", "18px", "20px", "24px", "30px", "36px", "48px"] }],
+      [{ font: [] }, { size: [] }],
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
       ["bold", "italic", "underline", "strike"],
       [{ color: [] }, { background: [] }],
@@ -67,12 +45,6 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
     ],
   };
 
-  const formats = [
-    "font", "size", "header", "bold", "italic", "underline", "strike",
-    "color", "background", "script", "list", "bullet", "indent", "align",
-    "blockquote", "code-block", "link", "image",
-  ];
-
   return (
     <div className="rich-text-editor">
       <QuillComponent
@@ -80,7 +52,6 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         value={value}
         onChange={onChange}
         modules={modules}
-        formats={formats}
         placeholder={placeholder || "Write your post content here..."}
         className="bg-background text-foreground"
       />
