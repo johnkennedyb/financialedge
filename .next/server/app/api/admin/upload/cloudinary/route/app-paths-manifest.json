@@ -1,0 +1,3 @@
+{
+  "/api/admin/upload/cloudinary/route": "app/api/admin/upload/cloudinary/route.js"
+}

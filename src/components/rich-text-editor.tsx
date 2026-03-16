@@ -17,8 +17,8 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       // Import CSS first, then component
       Promise.all([
         // @ts-ignore - CSS files don't have type declarations
-        import("react-quill/dist/quill.snow.css"),
-        import("react-quill")
+        import("react-quill-new/dist/quill.snow.css"),
+        import("react-quill-new")
       ]).then(([, mod]) => {
         setQuillComponent(() => mod.default);
         setMounted(true);
