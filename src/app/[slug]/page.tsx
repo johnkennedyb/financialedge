@@ -30,9 +30,33 @@ export async function generateMetadata({
         };
     }
 
+    const title = decodeHtmlEntities(item.title ?? "Untitled");
+    const description = item.description || item.excerpt || "";
+    const featuredImage = item.featuredImage;
+
     return {
-        title: decodeHtmlEntities(item.title ?? "Untitled"),
-        description: item.description ?? undefined,
+        title: title,
+        description: description,
+        openGraph: {
+            title: title,
+            description: description,
+            type: "article",
+            url: `https://financialedge.vercel.app/${slug}`,
+            images: featuredImage ? [
+                {
+                    url: featuredImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                }
+            ] : [],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: title,
+            description: description,
+            images: featuredImage ? [featuredImage] : [],
+        },
     };
 }
 
