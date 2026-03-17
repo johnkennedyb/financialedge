@@ -31,7 +31,7 @@ export async function generateMetadata({
     }
 
     const title = decodeHtmlEntities(item.title ?? "Untitled");
-    const description = item.description || item.excerpt || "";
+    const description = item.description || "";
     const featuredImage = item.featuredImage;
 
     return {
@@ -173,7 +173,7 @@ export default async function SlugPage({
 
                         <div className="p-6 space-y-4">
                             <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Share Intelligence</h4>
-                            <ShareButtons title={title} path={`/${slug}`} excerpt={description} />
+                            <ShareButtons title={title} path={`/${slug}`} excerpt={description || undefined} />
                         </div>
                     </aside>
                 </div>
