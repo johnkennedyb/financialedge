@@ -149,7 +149,7 @@ export default async function SlugPage({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-12 pt-4">
                     <div className="animate-fe-fade-up" style={{ animationDelay: '200ms' }}>
-                        <Prose className="max-w-none prose-lg prose-zinc dark:prose-invert prose-headings:font-bold prose-a:text-accent prose-img:rounded-3xl">
+                        <Prose className="max-w-none prose-lg prose-zinc dark:prose-invert prose-headings:font-bold prose-a:text-accent prose-img:rounded-3xl break-words">
                             <div dangerouslySetInnerHTML={{ __html: formatContentWithParagraphs(html) }} />
                         </Prose>
                     </div>
