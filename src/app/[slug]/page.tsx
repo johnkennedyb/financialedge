@@ -173,7 +173,7 @@ export default async function SlugPage({
 
                         <div className="p-6 space-y-4">
                             <h4 className="text-xs font-bold uppercase tracking-widest text-muted">Share Intelligence</h4>
-                            <ShareButtons title={title} path={`/${slug}`} />
+                            <ShareButtons title={title} path={`/${slug}`} excerpt={description} />
                         </div>
                     </aside>
                 </div>

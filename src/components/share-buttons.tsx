@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 type Props = {
   title: string;
   path: string;
+  content?: string;
+  excerpt?: string;
 };
 
 type NavigatorWithShare = Navigator & {
@@ -15,7 +17,7 @@ function cleanBaseUrl(url: string) {
   return url.replace(/\/+$/, "");
 }
 
-export default function ShareButtons({ title, path }: Props) {
+export default function ShareButtons({ title, path, content, excerpt }: Props) {
   const [currentUrl, setCurrentUrl] = useState<string>("");
 
   useEffect(() => {
@@ -65,6 +67,12 @@ export default function ShareButtons({ title, path }: Props) {
     await navigator.clipboard.writeText(currentUrl);
   }
 
+  async function copyText() {
+    const textToShare = `${title}\n\n${excerpt || content || ""}\n\nRead more: ${currentUrl}`;
+    await navigator.clipboard.writeText(textToShare);
+    alert("Text copied! Paste it into Facebook to share the full post content.");
+  }
+
   async function webShare() {
     if (!currentUrl) return;
     if (typeof navigator === "undefined") return;
@@ -96,6 +104,14 @@ export default function ShareButtons({ title, path }: Props) {
       </div>
 
       <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={copyText}
+          className="h-10 rounded-full border border-border px-4 text-sm font-semibold flex items-center justify-center hover:bg-secondary transition-colors bg-blue-50"
+          disabled={!currentUrl}
+        >
+          Copy Text for Facebook
+        </button>
         <button
           type="button"
           onClick={webShare}
