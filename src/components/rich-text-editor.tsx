@@ -8,6 +8,37 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
+// Custom font whitelist for Quill
+const fontOptions = [
+  "sans-serif",
+  "serif",
+  "monospace",
+  "arial",
+  "courier-new",
+  "georgia",
+  "helvetica",
+  "lucida",
+  "times-new-roman",
+  "verdana",
+  "impact",
+  "comic-sans-ms",
+  "trebuchet-ms",
+  "roboto",
+  "open-sans",
+  "lato",
+  "poppins",
+  "merriweather",
+  "playfair-display",
+  "inter",
+  "nunito",
+  "raleway",
+];
+
+// Type for Quill Font format
+interface FontFormat {
+  whitelist: string[];
+}
+
 export default function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
   const [mounted, setMounted] = useState(false);
   const [QuillComponent, setQuillComponent] = useState<any>(null);
@@ -20,6 +51,15 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         import("react-quill-new/dist/quill.snow.css"),
         import("react-quill-new")
       ]).then(([, mod]) => {
+        const Quill = (mod.default.Quill || (mod as any).Quill) as any;
+
+        // Register custom fonts with Quill
+        if (Quill) {
+          const Font = Quill.import("formats/font") as FontFormat;
+          Font.whitelist = fontOptions;
+          Quill.register("formats/font", Font, true);
+        }
+
         setQuillComponent(() => mod.default);
         setMounted(true);
       });
@@ -36,7 +76,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
   const modules = {
     toolbar: [
-      [{ font: [] }, { size: [] }],
+      [{ font: fontOptions }, { size: [] }],
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
       ["bold", "italic", "underline", "strike"],
       [{ color: [] }, { background: [] }],

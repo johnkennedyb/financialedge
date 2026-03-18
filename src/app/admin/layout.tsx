@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import Head from "next/head";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
@@ -44,6 +44,12 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-background">
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Poppins:wght@400;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&family=Inter:wght@400;700&family=Nunito:wght@400;700&family=Raleway:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
       {/* Admin Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="flex h-16 items-center gap-4 px-6">

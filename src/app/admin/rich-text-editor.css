@@ -133,6 +133,43 @@
   font-family: "Trebuchet MS", sans-serif;
 }
 
+/* Google Fonts */
+.rich-text-editor .ql-font-roboto {
+  font-family: "Roboto", sans-serif;
+}
+
+.rich-text-editor .ql-font-open-sans {
+  font-family: "Open Sans", sans-serif;
+}
+
+.rich-text-editor .ql-font-lato {
+  font-family: "Lato", sans-serif;
+}
+
+.rich-text-editor .ql-font-poppins {
+  font-family: "Poppins", sans-serif;
+}
+
+.rich-text-editor .ql-font-merriweather {
+  font-family: "Merriweather", serif;
+}
+
+.rich-text-editor .ql-font-playfair-display {
+  font-family: "Playfair Display", serif;
+}
+
+.rich-text-editor .ql-font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+.rich-text-editor .ql-font-nunito {
+  font-family: "Nunito", sans-serif;
+}
+
+.rich-text-editor .ql-font-raleway {
+  font-family: "Raleway", sans-serif;
+}
+
 /* Dark mode adjustments */
 .dark .rich-text-editor .ql-toolbar {
   background-color: hsl(var(--card));
