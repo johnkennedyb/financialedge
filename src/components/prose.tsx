@@ -10,7 +10,7 @@ export default function Prose({
     className?: string;
 }) {
     return (
-        <div className={`prose prose-lg max-w-none${className ? ` ${className}` : ""}`}>
+        <div className={`prose prose-lg max-w-none isolate overflow-x-hidden${className ? ` ${className}` : ""}`}>
             {children}
         </div>
     );
