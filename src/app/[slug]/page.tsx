@@ -101,7 +101,7 @@ export default async function SlugPage({
     const dateToDisplay = publishedAt && typeof publishedAt === 'string' ? publishedAt : null;
 
     return (
-        <article className="mx-auto w-full max-w-4xl pb-20">
+        <article className="mx-auto w-full max-w-6xl pb-20 px-4 sm:px-6 lg:px-8">
             {/* Minimal Focus Header */}
             <div className="flex items-center justify-between mb-12 animate-fe-fade-in">
                 <Link href="/" className="group flex items-center gap-2 text-sm font-semibold text-muted hover:text-foreground transition-colors">
@@ -147,14 +147,14 @@ export default async function SlugPage({
                     <FeaturedImage src={featuredImage} alt={title} />
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-12 pt-4 overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 lg:gap-12 pt-4">
                     <div className="animate-fe-fade-up min-w-0" style={{ animationDelay: '200ms' }}>
                         <Prose className="max-w-none prose-lg prose-zinc dark:prose-invert prose-headings:font-bold prose-a:text-accent prose-img:rounded-3xl [&_*]:max-w-full">
                             <div dangerouslySetInnerHTML={{ __html: formatContentWithParagraphs(html) }} />
                         </Prose>
                     </div>
 
-                    <aside className="hidden lg:block space-y-8 animate-fe-fade-in" style={{ animationDelay: '400ms' }}>
+                    <aside className="hidden lg:block space-y-6 lg:space-y-8 animate-fe-fade-in w-full" style={{ animationDelay: '400ms' }}>
                         <AdvertBanner position="sidebar" />
 
                         <div className="rounded-2xl border border-border bg-secondary/30 p-6 space-y-4">
