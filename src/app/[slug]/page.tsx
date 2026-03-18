@@ -154,7 +154,7 @@ export default async function SlugPage({
                         </Prose>
                     </div>
 
-                    <aside className="hidden lg:block lg:sticky lg:top-24 space-y-6 w-[280px] self-start shrink-0" style={{ animationDelay: '400ms' }}>
+                    <aside className="hidden lg:block space-y-6 w-[280px] shrink-0" style={{ animationDelay: '400ms' }}>
                         <AdvertBanner position="sidebar" />
 
                         <div className="rounded-2xl border border-border bg-secondary/30 p-6 space-y-4">
