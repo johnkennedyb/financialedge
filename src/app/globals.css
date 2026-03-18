@@ -445,4 +445,19 @@ html {
   .dark .prose a {
     color: rgb(255 255 255);
   }
+
+  /* Reset any Quill editor styles that might leak into article content */
+  .prose [class*="ql-"] {
+    max-width: 100% !important;
+    width: auto !important;
+  }
+
+  .prose .ql-editor {
+    white-space: normal !important;
+  }
+
+  .prose p {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
 }
