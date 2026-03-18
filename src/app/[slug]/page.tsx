@@ -147,14 +147,14 @@ export default async function SlugPage({
                     <FeaturedImage src={featuredImage} alt={title} />
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 lg:gap-12 pt-4">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 lg:gap-12 pt-4 items-start">
                     <div className="animate-fe-fade-up min-w-0" style={{ animationDelay: '200ms' }}>
                         <Prose className="max-w-none prose-lg prose-zinc dark:prose-invert prose-headings:font-bold prose-a:text-accent prose-img:rounded-3xl [&_*]:max-w-full">
                             <div dangerouslySetInnerHTML={{ __html: formatContentWithParagraphs(html) }} />
                         </Prose>
                     </div>
 
-                    <aside className="hidden lg:block space-y-6 lg:space-y-8 animate-fe-fade-in w-full" style={{ animationDelay: '400ms' }}>
+                    <aside className="hidden lg:block lg:sticky lg:top-24 space-y-6 w-full self-start" style={{ animationDelay: '400ms' }}>
                         <AdvertBanner position="sidebar" />
 
                         <div className="rounded-2xl border border-border bg-secondary/30 p-6 space-y-4">
