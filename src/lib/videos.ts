@@ -1,4 +1,6 @@
 import { getDb } from "./db";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
 export interface Video {
   id: string;
@@ -23,7 +25,28 @@ export interface VideoInput {
   sortOrder?: number;
 }
 
-// Extract YouTube video ID from various URL formats
+// Empty fallback for videos
+const EMPTY_VIDEOS: Video[] = [];
+
+// Helper to handle DB errors gracefully
+async function withVideoFallback<T>(
+  operation: () => Promise<T>,
+  fallback: T,
+  operationName: string
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error: any) {
+    if (error?.message?.includes("402") || 
+        error?.message?.includes("quota") ||
+        error?.message?.includes("compute time")) {
+      console.warn(`[DB QUOTA EXCEEDED] ${operationName} - using fallback`);
+      return fallback;
+    }
+    console.error(`[DB ERROR] ${operationName}:`, error);
+    return fallback;
+  }
+}
 export function extractYouTubeId(url: string): string | null {
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/,
@@ -42,60 +65,76 @@ export function getYouTubeThumbnail(videoId: string): string {
   return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 }
 
-// Get all videos
-export async function getAllVideos(): Promise<Video[]> {
-  const db = getDb();
-  const result = await db`
-    SELECT 
-      id, title, description, youtube_url as youtubeUrl, 
-      youtube_id as youtubeId, thumbnail_url as thumbnailUrl,
-      status, position, sort_order as sortOrder,
-      created_at as createdAt, updated_at as updatedAt
-    FROM videos 
-    ORDER BY sort_order ASC, created_at DESC
-  `;
-  return result.map(row => ({
-    id: String(row.id),
-    title: String(row.title),
-    description: row.description,
-    youtubeUrl: String(row.youtubeurl),
-    youtubeId: String(row.youtubeid),
-    thumbnailUrl: row.thumbnailurl,
-    status: String(row.status),
-    position: String(row.position),
-    sortOrder: Number(row.sortorder || 0),
-    createdAt: row.createdat,
-    updatedAt: row.updatedat,
-  }));
-}
+// Get all videos - cached 10 min
+export const getAllVideos = cache(
+  unstable_cache(
+    async (): Promise<Video[]> => {
+      return withVideoFallback(async () => {
+        const db = getDb();
+        const result = await db`
+          SELECT 
+            id, title, description, youtube_url as youtubeUrl, 
+            youtube_id as youtubeId, thumbnail_url as thumbnailUrl,
+            status, position, sort_order as sortOrder,
+            created_at as createdAt, updated_at as updatedAt
+          FROM videos 
+          ORDER BY sort_order ASC, created_at DESC
+        `;
+        return result.map(row => ({
+          id: String(row.id),
+          title: String(row.title),
+          description: row.description,
+          youtubeUrl: String(row.youtubeurl),
+          youtubeId: String(row.youtubeid),
+          thumbnailUrl: row.thumbnailurl,
+          status: String(row.status),
+          position: String(row.position),
+          sortOrder: Number(row.sortorder || 0),
+          createdAt: row.createdat,
+          updatedAt: row.updatedat,
+        }));
+      }, EMPTY_VIDEOS, "getAllVideos");
+    },
+    ["videos-all"],
+    { revalidate: 600, tags: ["videos"] }
+  )
+);
 
-// Get active videos by position
-export async function getActiveVideosByPosition(position: string): Promise<Video[]> {
-  const db = getDb();
-  const result = await db`
-    SELECT 
-      id, title, description, youtube_url as youtubeUrl, 
-      youtube_id as youtubeId, thumbnail_url as thumbnailUrl,
-      status, position, sort_order as sortOrder,
-      created_at as createdAt, updated_at as updatedAt
-    FROM videos 
-    WHERE status = 'active' AND position = ${position}
-    ORDER BY sort_order ASC, created_at DESC
-  `;
-  return result.map(row => ({
-    id: String(row.id),
-    title: String(row.title),
-    description: row.description,
-    youtubeUrl: String(row.youtubeurl),
-    youtubeId: String(row.youtubeid),
-    thumbnailUrl: row.thumbnailurl,
-    status: String(row.status),
-    position: String(row.position),
-    sortOrder: Number(row.sortorder || 0),
-    createdAt: row.createdat,
-    updatedAt: row.updatedat,
-  }));
-}
+// Get active videos by position - cached 5 min
+export const getActiveVideosByPosition = cache(
+  unstable_cache(
+    async (position: string): Promise<Video[]> => {
+      return withVideoFallback(async () => {
+        const db = getDb();
+        const result = await db`
+          SELECT 
+            id, title, description, youtube_url as youtubeUrl, 
+            youtube_id as youtubeId, thumbnail_url as thumbnailUrl,
+            status, position, sort_order as sortOrder,
+            created_at as createdAt, updated_at as updatedAt
+          FROM videos 
+          WHERE status = 'active' AND position = ${position}
+          ORDER BY sort_order ASC, created_at DESC
+        `;
+        return result.map(row => ({
+          id: String(row.id),
+          title: String(row.title),
+          description: row.description,
+          youtubeUrl: String(row.youtubeurl),
+          youtubeId: String(row.youtubeid),
+          thumbnailUrl: row.thumbnailurl,
+          status: String(row.status),
+          position: String(row.position),
+          sortOrder: Number(row.sortorder || 0),
+          createdAt: row.createdat,
+          updatedAt: row.updatedat,
+        }));
+      }, EMPTY_VIDEOS, `getActiveVideosByPosition-${position}`);
+    },
+    ["videos-position"],
+    { revalidate: 300, tags: ["videos", "videos-active"] }
+  )
+);
 
 // Get video by ID
 export async function getVideoById(id: string): Promise<Video | null> {
