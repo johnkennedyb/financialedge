@@ -122,7 +122,7 @@ export default function SiteHeader({ items }: { items: NavItem[] }) {
     return (
         <>
             <header
-                className={`fixed top-[144px] left-0 right-0 z-[9995] transition-all duration-300 ${scrolled
+                className={`fixed top-0 left-0 right-0 z-[9995] transition-all duration-300 ${scrolled
                     ? "border-b border-border bg-background/80 backdrop-blur-md py-3"
                     : "bg-background py-5"
                     }`}

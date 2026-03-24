@@ -5,6 +5,7 @@ import LocalPostCard from "@/components/local-post-card";
 import SafeImage from "@/components/safe-image";
 import AdvertBanner from "@/components/advert-banner";
 import StorySlider from "@/components/story-slider";
+import ExchangeIndicesBar from "@/components/exchange-indices-bar";
 import { VideoGrid } from "@/components/youtube-video";
 import { hasImportedContent, listLatestPosts, listSections, getPostsBySection } from "@/lib/db-content";
 import { getActiveVideosByPosition } from "@/lib/videos";
@@ -51,7 +52,7 @@ export default async function HomePage() {
 
         <div className="flex flex-col items-center text-center pt-1">
           <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl -mx-4 sm:mx-0">
-            <span className="text-blue-600">Financial edge,</span>{" "}
+            <span className="text-blue-600">Financial Edge,</span>{" "}
             <br className="leading-none" />
             <span className="text-red-600 font-bold text-lg sm:text-xl lg:text-2xl italic leading-tight" style={{ marginTop: '1px', display: 'inline-block' }}>sustaining stakeholders relations</span>
           </h1>
@@ -59,6 +60,11 @@ export default async function HomePage() {
           {/* Story Slider */}
           <div className="w-full mt-4">
             <StorySlider stories={posts.slice(0, 5).map(p => ({ ...p, title: p.title || '', description: p.description || '', featuredImage: p.featuredImage || undefined, section: p.section || undefined }))} />
+          </div>
+
+          {/* Exchange Indices Ticker Bars */}
+          <div className="w-full mt-6">
+            <ExchangeIndicesBar />
           </div>
         </div>
       </section>

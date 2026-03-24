@@ -4,7 +4,6 @@ import "./globals.css";
 
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
-import ExchangeIndicesBar from "@/components/exchange-indices-bar";
 
 // function ThemeScript() {
 //   const script = `(() => {
@@ -53,9 +52,8 @@ export default function RootLayout({
         {/* <ThemeScript /> */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-[200px]`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased pt-[88px]`}
       >
-        <ExchangeIndicesBar />
         <SiteHeader
           items={[
             { label: "Home", href: "/" },

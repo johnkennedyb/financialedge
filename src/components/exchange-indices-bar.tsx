@@ -84,20 +84,18 @@ interface TickerBarProps {
   labelColor: string;
   indices: IndexItemData[];
   speed?: number;
-  topPosition: string;
-  zIndex: number;
 }
 
-function ExchangeTickerBar({ label, bgColor, labelColor, indices, speed = 70, topPosition, zIndex }: TickerBarProps) {
+function ExchangeTickerBar({ label, bgColor, labelColor, indices, speed = 70 }: TickerBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
   const displayContent = [...indices, ...indices, ...indices];
 
   return (
-    <div className={`${bgColor} border-b border-border/50 overflow-hidden fixed left-0 right-0 ${topPosition}`} style={{ zIndex }}>
+    <div className={`${bgColor} border-b border-border/50 overflow-hidden relative w-full`}>
       <div className="flex items-center">
-        <div className={`flex-shrink-0 ${labelColor} px-3 py-1.5 text-xs font-bold text-white z-10`}>
+        <div className={`flex-shrink-0 ${labelColor} w-16 px-3 py-1.5 text-xs font-bold text-white z-10 flex items-center justify-center`}>
           {label}
         </div>
 
@@ -147,8 +145,6 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-blue-600"
         indices={ngxIndices}
         speed={60}
-        topPosition="top-0"
-        zIndex={9998}
       />
 
       {/* 2. FMDQ Exchange */}
@@ -158,8 +154,6 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-purple-600"
         indices={fmdqIndices}
         speed={70}
-        topPosition="top-[30px]"
-        zIndex={9997}
       />
 
       {/* 3. NASD - National Association of Securities Dealers */}
@@ -169,8 +163,6 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-green-600"
         indices={nasdIndices}
         speed={65}
-        topPosition="top-[60px]"
-        zIndex={9996}
       />
 
       {/* 4. AFEX Commodities Exchange */}
@@ -180,8 +172,6 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-orange-600"
         indices={afexIndices}
         speed={75}
-        topPosition="top-[90px]"
-        zIndex={9995}
       />
 
       {/* 5. Lagos Commodities & Futures Exchange (LCFE) */}
@@ -191,8 +181,6 @@ export default function ExchangeIndicesBar() {
         labelColor="bg-teal-600"
         indices={lcfeIndices}
         speed={70}
-        topPosition="top-[120px]"
-        zIndex={9994}
       />
     </>
   );
