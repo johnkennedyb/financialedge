@@ -35,7 +35,7 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
           <img
             src={advert.imageUrl}
             alt={advert.title}
-            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
       ) : (
