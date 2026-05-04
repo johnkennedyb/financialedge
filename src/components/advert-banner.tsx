@@ -1,27 +1,14 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
 import { getActiveAdvertsByPosition } from "@/lib/adverts";
-import ImageLightbox from "@/components/image-lightbox";
 
 interface AdvertBannerProps {
   position: "homepage_hero" | "homepage_sidebar" | "footer" | "sidebar" | "inline";
   className?: string;
 }
 
-export default function AdvertBanner({ position, className = "" }: AdvertBannerProps) {
-  const [adverts, setAdverts] = useState<any[]>([]);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-
-  useEffect(() => {
-    const loadAdverts = async () => {
-      const advertsData = await getActiveAdvertsByPosition(position);
-      setAdverts(advertsData);
-    };
-    loadAdverts();
-  }, [position]);
+export default async function AdvertBanner({ position, className = "" }: AdvertBannerProps) {
+  const adverts = await getActiveAdvertsByPosition(position);
 
   console.log('DEBUG AdvertBanner position:', position, 'adverts count:', adverts.length);
   if (adverts.length > 0) {
@@ -43,10 +30,8 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
   const advertContent = (
     <div className="relative overflow-hidden border border-border hover:border-accent transition-all hover:shadow-md w-full">
       {advert.imageUrl ? (
-        <div
-          className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] bg-black cursor-pointer"
-          onClick={() => setLightboxOpen(true)}
-        >
+        <div className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] bg-black">
+
           <img
             src={advert.imageUrl}
             alt={advert.title}
@@ -77,12 +62,6 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
           target="_blank"
           rel="noopener noreferrer"
           className="block group"
-          onClick={(e) => {
-            if (advert.imageUrl) {
-              e.preventDefault();
-              setLightboxOpen(true);
-            }
-          }}
         >
           {advertContent}
         </Link>
@@ -90,15 +69,6 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
         <div className="block group">
           {advertContent}
         </div>
-      )}
-
-      {advert.imageUrl && (
-        <ImageLightbox
-          src={advert.imageUrl}
-          alt={advert.title}
-          isOpen={lightboxOpen}
-          onClose={() => setLightboxOpen(false)}
-        />
       )}
     </div>
   );
