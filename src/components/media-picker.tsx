@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getAllMedia } from "@/lib/admin-api";
 
 interface MediaFile {
@@ -26,6 +26,8 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<"library" | "upload">("library");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadMedia = async () => {
     try {
@@ -84,10 +86,24 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
     setFilteredFiles(filtered);
   }, [searchQuery, mediaFiles]);
 
+  const resetUploadState = () => {
+    setSelectedFile(null);
+    setUploadError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleTabChange = (tab: "library" | "upload") => {
+    setActiveTab(tab);
+    resetUploadState();
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) return;
 
     setUploading(true);
+    setUploadError(null);
     try {
       const form = new FormData();
       form.append("file", selectedFile);
@@ -101,14 +117,35 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
       }
       const uploaded = await res.json();
 
-      // Select the newly uploaded image
+      // Reset and close
+      resetUploadState();
       onSelect(uploaded.url);
       onClose();
     } catch (err) {
       console.error("Upload failed:", err);
-      alert(err instanceof Error ? err.message : "Upload failed");
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith("image/")) {
+        setSelectedFile(file);
+        setUploadError(null);
+      } else {
+        setUploadError("Please drop an image file");
+      }
     }
   };
 
@@ -135,13 +172,13 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
         {/* Tabs */}
         <div className="flex border-b border-border">
           <button
-            onClick={() => setActiveTab("library")}
+            onClick={() => handleTabChange("library")}
             className={`px-6 py-3 text-sm font-medium ${activeTab === "library" ? "border-b-2 border-accent text-accent" : "text-muted hover:text-foreground"}`}
           >
             Media Library
           </button>
           <button
-            onClick={() => setActiveTab("upload")}
+            onClick={() => handleTabChange("upload")}
             className={`px-6 py-3 text-sm font-medium ${activeTab === "upload" ? "border-b-2 border-accent text-accent" : "text-muted hover:text-foreground"}`}
           >
             Upload New
@@ -205,11 +242,19 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+              <div
+                className="border-2 border-dashed border-border rounded-lg p-8 text-center"
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+              >
                 <input
+                  ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    setSelectedFile(e.target.files?.[0] || null);
+                    setUploadError(null);
+                  }}
                   className="hidden"
                   id="media-picker-upload"
                 />
@@ -222,6 +267,12 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
                   <span className="text-xs text-muted">or drag and drop</span>
                 </label>
               </div>
+
+              {uploadError && (
+                <div className="rounded-lg bg-destructive/10 border border-destructive text-destructive px-4 py-2 text-sm">
+                  {uploadError}
+                </div>
+              )}
 
               {selectedFile && (
                 <div className="space-y-2">
@@ -241,7 +292,10 @@ export default function MediaPicker({ isOpen, onClose, onSelect }: MediaPickerPr
 
         {/* Footer */}
         <div className="p-4 border-t border-border flex justify-end gap-2">
-          <button onClick={onClose} className="rounded-lg border border-border bg-secondary px-4 py-2 hover:bg-secondary/80">
+          <button
+            onClick={() => { resetUploadState(); onClose(); }}
+            className="rounded-lg border border-border bg-secondary px-4 py-2 hover:bg-secondary/80"
+          >
             Cancel
           </button>
         </div>
