@@ -46,7 +46,7 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
     <div className="relative overflow-hidden border border-border hover:border-accent transition-all hover:shadow-md w-full">
       {advert.imageUrl ? (
         <div
-          className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] bg-black cursor-pointer"
+          className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] cursor-pointer"
           onClick={handleImageClick}
         >
           <img
