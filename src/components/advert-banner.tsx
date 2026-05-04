@@ -1,37 +1,54 @@
+"use client";
+
 import Link from "next/link";
-import Image from "next/image";
-import { getActiveAdvertsByPosition } from "@/lib/adverts";
+import { useState, useEffect } from "react";
+import ImageLightbox from "@/components/image-lightbox";
+
+interface Advert {
+  id: string;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  linkUrl: string | null;
+  position: string;
+  status: string;
+}
 
 interface AdvertBannerProps {
   position: "homepage_hero" | "homepage_sidebar" | "footer" | "sidebar" | "inline";
   className?: string;
 }
 
-export default async function AdvertBanner({ position, className = "" }: AdvertBannerProps) {
-  const adverts = await getActiveAdvertsByPosition(position);
+export default function AdvertBanner({ position, className = "" }: AdvertBannerProps) {
+  const [adverts, setAdverts] = useState<Advert[]>([]);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  console.log('DEBUG AdvertBanner position:', position, 'adverts count:', adverts.length);
-  if (adverts.length > 0) {
-    console.log('DEBUG first advert:', adverts[0]);
-  }
+  useEffect(() => {
+    fetch(`/api/adverts?position=${position}`)
+      .then((res) => res.json())
+      .then((data) => setAdverts(data.adverts || []))
+      .catch((err) => console.error("Failed to load adverts:", err));
+  }, [position]);
 
   if (adverts.length === 0) return null;
 
-  // Get the highest priority advert
   const advert = adverts[0];
 
-  // DEBUG: Show what's in the advert
-  console.log('Advert data:', {
-    title: advert.title,
-    imageUrl: advert.imageUrl,
-    hasImage: !!advert.imageUrl
-  });
+  const handleImageClick = (e: React.MouseEvent) => {
+    if (advert.imageUrl) {
+      e.preventDefault();
+      e.stopPropagation();
+      setLightboxOpen(true);
+    }
+  };
 
   const advertContent = (
     <div className="relative overflow-hidden border border-border hover:border-accent transition-all hover:shadow-md w-full">
       {advert.imageUrl ? (
-        <div className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] bg-black">
-
+        <div
+          className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] bg-black cursor-pointer"
+          onClick={handleImageClick}
+        >
           <img
             src={advert.imageUrl}
             alt={advert.title}
@@ -54,22 +71,32 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
   );
 
   return (
-    <div className={`advert-banner ${className}`}>
-      <div className="text-xs text-muted mb-1 uppercase tracking-wider">Advertisement</div>
-      {advert.linkUrl ? (
-        <Link
-          href={advert.linkUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block group"
-        >
-          {advertContent}
-        </Link>
-      ) : (
-        <div className="block group">
-          {advertContent}
-        </div>
+    <>
+      <div className={`advert-banner ${className}`}>
+        <div className="text-xs text-muted mb-1 uppercase tracking-wider">Advertisement</div>
+        {advert.linkUrl ? (
+          <Link
+            href={advert.linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group"
+          >
+            {advertContent}
+          </Link>
+        ) : (
+          <div className="block group">
+            {advertContent}
+          </div>
+        )}
+      </div>
+      {advert.imageUrl && (
+        <ImageLightbox
+          src={advert.imageUrl}
+          alt={advert.title}
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+        />
       )}
-    </div>
+    </>
   );
 }
