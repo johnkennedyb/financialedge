@@ -46,7 +46,7 @@ export default function ImageLightbox({ src, alt, isOpen, onClose }: ImageLightb
       <img
         src={src}
         alt={alt}
-        className="max-w-full max-h-[90vh] object-contain rounded-lg"
+        className="max-w-full max-h-[90vh] object-contain rounded-lg m-auto"
         onClick={(e) => e.stopPropagation()}
       />
     </div>
