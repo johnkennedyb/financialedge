@@ -30,7 +30,7 @@ export default async function AdvertBanner({ position, className = "" }: AdvertB
   const advertContent = (
     <div className="relative overflow-hidden border border-border hover:border-accent transition-all hover:shadow-md w-full">
       {advert.imageUrl ? (
-        <div className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[600px] md:max-h-[1000px] bg-black">
+        <div className="relative w-full min-h-[300px] md:min-h-[400px] max-h-[400px] md:max-h-[1000px] bg-black">
 
           <img
             src={advert.imageUrl}
