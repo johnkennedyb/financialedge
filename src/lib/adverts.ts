@@ -292,3 +292,133 @@ export async function incrementAdvertImpression(id: string): Promise<void> {
     WHERE id = ${id}
   `;
 }
+
+// Record a detailed advert event (click or impression)
+export async function recordAdvertEvent(
+  id: string,
+  eventType: "click" | "impression",
+  metadata?: { ip?: string; userAgent?: string; referrer?: string }
+): Promise<void> {
+  const db = getDb();
+
+  // Update aggregate counter
+  if (eventType === "click") {
+    await incrementAdvertClick(id);
+  } else {
+    await incrementAdvertImpression(id);
+  }
+
+  // Insert detailed event record (best-effort; ignore if table doesn't exist yet)
+  try {
+    await db`
+      INSERT INTO advert_events (advert_id, event_type, ip_address, user_agent, referrer)
+      VALUES (
+        ${id},
+        ${eventType},
+        ${metadata?.ip || null},
+        ${metadata?.userAgent || null},
+        ${metadata?.referrer || null}
+      )
+    `;
+  } catch (err) {
+    // Silently ignore if advert_events table doesn't exist (migration not run yet)
+    // eslint-disable-next-line no-console
+    console.warn("Failed to record advert event (migration may be pending):", err);
+  }
+}
+
+// Get detailed advert report with start-to-end metrics
+export async function getAdvertDetailedReport(advertId?: string): Promise<
+  Array<{
+    id: string;
+    title: string;
+    position: string;
+    status: string;
+    startDate: string | null;
+    endDate: string | null;
+    totalClicks: number;
+    totalImpressions: number;
+    ctr: number; // click-through rate
+    dailyClicks: Array<{ date: string; count: number }>;
+    dailyImpressions: Array<{ date: string; count: number }>;
+  }>
+> {
+  const db = getDb();
+
+  const whereClause = advertId ? db`WHERE id = ${advertId}` : db``;
+
+  const advertsResult = await db`
+    SELECT 
+      id,
+      title,
+      position,
+      status,
+      start_date as startDate,
+      end_date as endDate,
+      click_count as clickCount,
+      impression_count as impressionCount
+    FROM adverts
+    ${whereClause}
+    ORDER BY created_at DESC
+  `;
+
+  if (advertsResult.length === 0) return [];
+
+  // Try to get daily breakdown from advert_events; fall back to aggregates if table missing
+  let dailyClicksMap: Map<string, Map<string, number>> = new Map();
+  let dailyImpressionsMap: Map<string, Map<string, number>> = new Map();
+
+  try {
+    const eventsResult = await db`
+      SELECT 
+        advert_id,
+        event_type,
+        DATE(created_at) as event_date,
+        COUNT(*) as count
+      FROM advert_events
+      ${advertId ? db`WHERE advert_id = ${advertId}` : db``}
+      GROUP BY advert_id, event_type, DATE(created_at)
+      ORDER BY event_date DESC
+    `;
+
+    for (const row of eventsResult as any[]) {
+      const advertIdStr = String(row.advert_id);
+      const dateStr = String(row.event_date);
+      const count = Number(row.count);
+
+      if (row.event_type === "click") {
+        if (!dailyClicksMap.has(advertIdStr)) dailyClicksMap.set(advertIdStr, new Map());
+        dailyClicksMap.get(advertIdStr)!.set(dateStr, count);
+      } else {
+        if (!dailyImpressionsMap.has(advertIdStr)) dailyImpressionsMap.set(advertIdStr, new Map());
+        dailyImpressionsMap.get(advertIdStr)!.set(dateStr, count);
+      }
+    }
+  } catch {
+    // Table may not exist yet; use empty maps
+  }
+
+  return advertsResult.map((row: any) => {
+    const idStr = String(row.id);
+    const clicks = Number(row.clickCount || row.clickcount || 0);
+    const impressions = Number(row.impressionCount || row.impressioncount || 0);
+    const ctr = impressions > 0 ? Number(((clicks / impressions) * 100).toFixed(2)) : 0;
+
+    const clicksMap = dailyClicksMap.get(idStr) || new Map();
+    const impressionsMap = dailyImpressionsMap.get(idStr) || new Map();
+
+    return {
+      id: idStr,
+      title: String(row.title),
+      position: row.position,
+      status: row.status,
+      startDate: row.startDate || row.startdate || null,
+      endDate: row.endDate || row.enddate || null,
+      totalClicks: clicks,
+      totalImpressions: impressions,
+      ctr,
+      dailyClicks: Array.from(clicksMap.entries()).map(([date, count]) => ({ date, count })),
+      dailyImpressions: Array.from(impressionsMap.entries()).map(([date, count]) => ({ date, count })),
+    };
+  });
+}

@@ -26,7 +26,21 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
   useEffect(() => {
     fetch(`/api/adverts?position=${position}`)
       .then((res) => res.json())
-      .then((data) => setAdverts(data.adverts || []))
+      .then((data) => {
+        const loaded = data.adverts || [];
+        setAdverts(loaded);
+
+        // Fire impression tracking for each loaded advert
+        loaded.forEach((adv: Advert) => {
+          if (adv.id) {
+            fetch("/api/adverts/track", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: adv.id, type: "impression" }),
+            }).catch((err) => console.error("Failed to track impression:", err));
+          }
+        });
+      })
       .catch((err) => console.error("Failed to load adverts:", err));
   }, [position]);
 
@@ -76,7 +90,7 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
         <div className="text-xs text-muted mb-1 uppercase tracking-wider">Advertisement</div>
         {advert.linkUrl ? (
           <Link
-            href={advert.linkUrl}
+            href={`/api/adverts/click?id=${advert.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="block group"
