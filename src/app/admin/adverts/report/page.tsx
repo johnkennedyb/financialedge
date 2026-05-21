@@ -21,6 +21,71 @@ interface AdvertReport {
     dailyImpressions: DailyStat[];
 }
 
+function downloadCSV(reports: AdvertReport[]) {
+    const rows: string[] = [];
+    rows.push("Advert ID,Title,Position,Status,Campaign Start,Campaign End,Total Clicks,Total Impressions,CTR (%),Date,Clicks,Impressions");
+
+    for (const report of reports) {
+        const allDates = Array.from(
+            new Set([
+                ...report.dailyClicks.map((d) => d.date),
+                ...report.dailyImpressions.map((d) => d.date),
+            ])
+        ).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+        if (allDates.length === 0) {
+            rows.push(
+                [
+                    report.id,
+                    `"${report.title.replace(/"/g, "\"\"")}"`,
+                    report.position,
+                    report.status,
+                    report.startDate || "",
+                    report.endDate || "",
+                    report.totalClicks,
+                    report.totalImpressions,
+                    report.ctr,
+                    "",
+                    "",
+                    "",
+                ].join(",")
+            );
+        } else {
+            for (const date of allDates) {
+                const clicks = report.dailyClicks.find((d) => d.date === date)?.count || 0;
+                const impressions = report.dailyImpressions.find((d) => d.date === date)?.count || 0;
+                rows.push(
+                    [
+                        report.id,
+                        `"${report.title.replace(/"/g, "\"\"")}"`,
+                        report.position,
+                        report.status,
+                        report.startDate || "",
+                        report.endDate || "",
+                        report.totalClicks,
+                        report.totalImpressions,
+                        report.ctr,
+                        date,
+                        clicks,
+                        impressions,
+                    ].join(",")
+                );
+            }
+        }
+    }
+
+    const csvContent = "\uFEFF" + rows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `advert-reports-${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
 export default function AdvertsReportPage() {
     const [reports, setReports] = useState<AdvertReport[]>([]);
     const [loading, setLoading] = useState(true);
@@ -80,12 +145,20 @@ export default function AdvertsReportPage() {
                     <h1 className="text-3xl font-bold">Advert Reports</h1>
                     <p className="text-muted">Detailed performance from start of advert to end</p>
                 </div>
-                <button
-                    onClick={() => window.location.reload()}
-                    className="rounded-lg border border-border bg-background px-4 py-2 text-sm hover:bg-accent/10 transition-colors"
-                >
-                    Refresh
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => downloadCSV(reports)}
+                        className="rounded-lg border border-border bg-background px-4 py-2 text-sm hover:bg-accent/10 transition-colors"
+                    >
+                        Download CSV
+                    </button>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="rounded-lg border border-border bg-background px-4 py-2 text-sm hover:bg-accent/10 transition-colors"
+                    >
+                        Refresh
+                    </button>
+                </div>
             </div>
 
             {reports.length === 0 ? (
@@ -108,8 +181,8 @@ export default function AdvertsReportPage() {
                                     </span>
                                     <span
                                         className={`px-2 py-0.5 rounded-full text-xs ${report.status === "active"
-                                                ? "bg-green-500/10 text-green-500"
-                                                : "bg-red-500/10 text-red-500"
+                                            ? "bg-green-500/10 text-green-500"
+                                            : "bg-red-500/10 text-red-500"
                                             }`}
                                     >
                                         {report.status}

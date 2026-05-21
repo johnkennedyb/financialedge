@@ -49,6 +49,12 @@ export default function AdvertBanner({ position, className = "" }: AdvertBannerP
   const advert = adverts[0];
 
   const handleImageClick = (e: React.MouseEvent) => {
+    if (advert.linkUrl) {
+      // If there's a link URL, let the parent <Link> handle navigation.
+      // The click will naturally bubble up and follow the link,
+      // which hits /api/adverts/click?id=... and redirects to advert.linkUrl.
+      return;
+    }
     if (advert.imageUrl) {
       e.preventDefault();
       e.stopPropagation();
